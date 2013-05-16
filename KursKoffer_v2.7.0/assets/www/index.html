@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<!--
+	PhoneGap v2.7.0
+    http://www.apache.org/licenses/LICENSE-2.0
+-->
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <!-- 
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+         -->
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link rel="stylesheet" href="css/kurskoffer.min.css" />
+		<link rel="stylesheet" href="css/jquery.mobile.structure-1.3.0.min.css" />
+        <title>KursKoffer</title>
+        
+        <script type="text/javascript" charset="utf-8" src="js/jquery-1.9.1.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.3.0.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="cordova-2.7.0.js"></script>
+		<script type="text/javascript" charset="utf-8" src="main.js"></script>
+    </head>
+    <body onload="init()">
+    <!-- Start of first page -->
+    	<div data-role="page" id="initialPage">
+			<div data-role="header" data-position="inline"  data-theme="a">
+				<h1>cloudLearn</h1>
+				<a data-role="none" class="dummyBtn opacity" href="#"></a>
+				<a data-role="none" class="aboutBtn opacity" data-transition="slide" href="#aboutPage"></a></div>
+			<div data-role="content" align="center">
+				<!-- Content -->
+				<h1>The Course Suitcase</h1><br />
+				<p>Select needed course to start the learning.</p><br />
+				<form action="#" name="courseForm" id="courseForm">
+					<label for="coursetype">List of available courses:</label>
+					<select name="coursetype" id="coursetype">
+						<option value="0" selected="selected" disabled>Select here...</option>
+						<option value="1">OÖ Rotes Kreuz</option>
+						<option value="2">Samariterbund Linz</option>
+						<option value="3">PKA-Akademie Wels</option>
+					</select><br /><br />
+					<button type="button" id="startBtn" data-theme="a" onclick="moveToCourse()">Start</button>
+				</form><!-- /Content -->
+			</div>
+		</div>
+		<!-- /Start of first page -->
+		
+		<!-- 1.Rettungssanitäter --> 
+    	<div data-role="page" id="paramedicPage">
+			<div data-role="header" data-position="inline" data-theme="b">
+				<h1>Authentifikation</h1>
+				<a data-role="none" class="dummyBtn opacity" href="#"></a>
+				<a data-role="none" class="aboutBtn opacity" data-transition="slide" href="#aboutPage"></a></div>
+			<div data-role="content">
+				<!-- Content -->
+				<div align="center">
+					<h1>Rettungssanitäter</h1>
+					<img height="125" src="img/oerk_ooe.png" /></div>
+				<p><a data-transition="slide" href="#forgotPass">Passwort vergessen</a></p>
+				<p><a data-transition="slide" href="#helpPage">brauchen Hilfe?</a></p>
+				<form id="paramedicLogin">
+					<div data-role="fieldcontain" class="ui-hide-label">
+						<input type="text" name="username" id="username" value="" placeholder="Benutzername" /></div>
+					<div data-role="fieldcontain" class="ui-hide-label">
+						<input type="password" name="password" id="password" value="" placeholder="Passwort" /></div>
+					<input type="submit" value="Einloggen" id="submitButton" onclick="handleLogin()" />
+					<a href="#homePage1">Click me</a>
+				</form><!-- /Content -->
+			</div>
+		</div>
+		<!-- / 1.Rettungssanitäter -->
+		
+		<!-- 2.Samariterbund Linz --> 
+    	<div data-role="page" id="samariterbundPage">
+			<div data-role="header" data-position="inline" data-theme="c">
+				<h1>Authentication</h1>
+				<a data-role="none" class="dummyBtn opacity" href="#"></a>
+				<a data-role="none" class="aboutBtn opacity" data-transition="slide" href="#aboutPage"></a></div>
+			<div data-role="content">
+				<!-- Content -->
+				<div align="center">
+					<h1>Samariterbund Linz</h1>
+					<img height="125" src="img/asboe.png" /></div>
+				<p><a data-transition="slide" href="#forgotPass">Forgot password?</a></p>
+				<p><a data-transition="slide" href="#helpPage">Need a help?</a></p>
+				<form id="samariterLogin">
+					<div data-role="fieldcontain" class="ui-hide-label">
+						<input type="text" name="username2" id="username2" value="" placeholder="Username" /></div>
+					<div data-role="fieldcontain" class="ui-hide-label">
+						<input type="password" name="password2" id="password2" value="" placeholder="Password" /></div>
+					<input type="submit" value="Login" id="submitButton2" />
+				</form><!-- /Content -->
+			</div>
+		</div>
+		<!-- / 2.Samariterbund Linz -->
+		
+		<!-- 1.Rettungssanitäter: Main page -->
+		<div data-role="page" id="homePage1">
+			<div data-role="header" data-position="inline" data-theme="b">
+				<h1>Hauptmenü</h1>
+				<a data-role="none" data-transition="flip" class="logoutBtn opacity" href="#" onclick="doLogout();return false;"></a>
+				<a data-role="none" data-transition="slide" class="settingsBtn opacity" href="#settingsPage" onclick="loadSettings()"></a></div>
+			<div data-role="content">
+				<p>Willkommen im Lernsystem <b class="userName"></b></p><br />
+				<script type="text/javascript">
+					$('.userName').html(localStorage.getItem('username'));
+				</script>
+				<!-- GridView -->
+				<div id="gridview" class="ui-grid-a" align="center">
+					<div class="ui-block-a">
+						<a data-role="none" data-transition="slide" href="#coursesPage" onclick="courseList()"><img class="opacity" src="img/courses.png" /></a></div>
+					<div class="ui-block-b">
+						<a data-role="none" data-transition="slide" href="#schedulePage"><img class="opacity" src="img/schedules.png" /></a></div>
+					<div class="ui-block-a">
+						<a data-role="none" data-transition="slide" href="#tasksPage"><img class="opacity" src="img/tasks.png" /></a></div>
+					<div class="ui-block-b">
+						<a data-role="none" data-transition="slide" href="#progressPage"><img class="opacity" src="img/progress.png" /></a></div>
+					<div class="ui-block-a">
+						<a data-role="none" data-transition="slide" href="#" onclick="firstAid(); return false;"><img class="opacity" src="img/firstaid.png" /></a></div>
+					<div class="ui-block-b">
+						<a data-role="none" data-transition="slide" href="#socialPage"><img class="opacity" src="img/social.png" /></a></div>
+				</div><!-- /GridView -->
+            </div>
+		</div>
+		<!-- / 1.Rettungssanitäter: Main page -->
+		
+		<!-- Courses page -->
+		<div data-role="page" id="coursesPage">
+			<div data-role="header" data-position="inline" data-theme="b">
+				<h1>Kurse</h1>
+				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a>
+				<a data-role="none" class="refreshBtn opacity" data-transition="slide" href="#" onclick="getCourseList();return false;"></a></div>
+			<div data-role="content" id="cList">
+				<!-- collapsible sets (accordion) -->
+				<div data-role="collapsible-set" id="courseList" data-mini="true" data-collapsed-icon="arrow-r" data-expanded-icon="arrow-d" data-inset="false">
+					<!-- Topiclist aquired from the course.oerk -->
+				</div><!-- /Course print into accordion JS -->
+			</div>
+		</div>
+		<!-- /Courses page -->
+		
+		<!-- SigleContent page -->
+		<div data-role="page" id="singleContent">
+			<div data-role="header" data-position="inline" data-theme="b">
+				<h1 class="tTitle"></h1>
+				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a>
+				<a data-role="none" class="settingsBtn opacity" data-transition="slide" href="#settingsPage"></a></div>
+			<div data-role="content" id="cContent">
+				<!-- Wiki-related link -->
+				<div align="right"><a id="wikiLink" href="#" onclick="wikiGenerate()"><img height="48" src="img/wiki.png" /></a></div>
+				<!-- Wiki-generated content here (if available) -->
+				
+				<!-- Single Course Topic here -->
+			</div>
+		</div>
+		<!-- /SigleContent page -->
+		
+		<!-- Schedules page -->
+		<div data-role="page" id="schedulePage">
+			<div data-role="header" data-position="inline" data-theme="b">
+				<h1>Termine</h1>
+				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a>
+				<a data-role="none" class="settingsBtn opacity" data-transition="slide" href="#settingsPage"></a></div>
+			<div data-role="content" id="scheduleList">
+				<p>Under construction.</p> 
+			</div>
+		</div>
+		<!-- /Schedules page -->
+		
+		<!-- Tasks page -->
+		<div data-role="page" id="tasksPage">
+			<div data-role="header" data-position="inline" data-theme="b">
+				<h1>Aufgaben</h1>
+				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a>
+				<a data-role="none" class="settingsBtn opacity" data-transition="slide" href="#settingsPage"></a></div>
+			<div data-role="content" id="taskList">
+				<p>Under construction.</p> 
+			</div>
+		</div>
+		<!-- /Tasks page -->
+		
+		<!-- Progress page -->
+		<div data-role="page" id="progressPage">
+			<div data-role="header" data-position="inline" data-theme="b">
+				<h1>Fortschritt</h1>
+				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a>
+				<a data-role="none" class="settingsBtn opacity" data-transition="slide" href="#settingsPage"></a></div>
+			<div data-role="content" id="prgss">
+				<p>Under construction.</p> 
+			</div>
+		</div>
+		<!-- /Progress page -->
+		
+		<!-- Social page -->
+		<div data-role="page" id="socialPage">
+			<div data-role="header" data-position="inline" data-theme="b">
+				<h1>Soziales Netz</h1>
+				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a>
+				<a data-role="none" class="settingsBtn opacity" data-transition="slide" href="#settingsPage"></a></div>
+			<div data-role="content" id="socium">
+				<p>Under construction.</p> 
+			</div>
+		</div>
+		<!-- /Social page -->
+		
+		<!-- Settings -->
+		<div data-role="page" id="settingsPage">
+			<div data-role="header" data-position="inline" data-theme="b">
+				<h1>Einstellungen</h1>
+				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a></div>
+			<div data-role="content">
+				<!-- listview -->
+				<form id="settingsForm" name="settingsForm">
+					<ul data-role="listview">
+						<li>
+							<h3>Töne</h3>
+							<p>Töne während des Pop-ups</p>
+							<p class="ui-li-aside">
+								<select id="sound" name="sound" data-role="slider" data-mini="true"
+									onchange="if (document.getElementById('sound').value == '1') beep();">
+									<option value="0">Aus</option>
+									<option value="1">An</option>
+								</select></p></li>
+						<li>
+							<h3>Vibration</h3>
+							<p>Vibration während des Pop-ups</p>
+							<p class="ui-li-aside">
+								<select id="vibration" name="vibration" data-role="slider" data-mini="true"
+									onchange="if (document.getElementById('vibration').value == '1') vibrate();">
+									<option value="0">Aus</option>
+									<option value="1">An</option>
+								</select></p></li>
+						<li>
+							<h3>Kalender Sync</h3>
+							<p>Sync mit dem Gerät Kalender</p>
+							<p class="ui-li-aside">
+								<a data-role="none" href="#" onclick="doSync()"><img src="css/images/ic_refresh.png" /></a></p></li>
+						<li data-icon="false">
+							<h3>Info</h3>
+							<p>Information über das Projekt</p>
+							<p class="ui-li-aside">
+								<a data-role="none" data-transition="slide" href="#aboutPage"><img src="css/images/ic_about.png" /></a></p></li>
+					</ul><br />
+					<div align="center">
+						<a href="javascript:history.back();" data-role="button" data-inline="true">Abbrechen</a>
+						<a href="javascript:history.back();" data-role="button" onclick="saveSettings()" data-inline="true">Speichern</a>
+					</div>
+				</form><!-- /listview -->
+			</div>
+		</div>
+		<!-- /Settings -->
+		
+		<!-- Forgot Password -->
+		<div data-role="page" id="forgotPass">
+			<div data-role="header" data-position="inline" data-theme="b">
+				<h1>Passwort Recovery</h1>
+				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a></div>
+			<div data-role="content">
+				<!-- Content -->
+				<p>Bitte geben Sie Ihre E-Mail-Adresse für Ihr Konto. Das System wird Ihnen ein Überprüfungscode schicken. 
+				   Sobald Sie den Code erhalten haben, können Sie ein neues Passwort für Ihr Benutzerkonto wählen.</p><br />
+				<form id="inputForm" name="inputForm">
+					<label for="Email">Geben Sie Ihre E-Mail-Adresse:</label>
+					<input type="text" name="email" id="email" value="" placeholder="" />
+					<a href="#" data-role="button" onclick="passwordRecovery()">Senden</a>
+				</form><!-- /Content -->
+			</div>	
+		</div>
+		<!-- /Forgot Password -->
+		
+		<!-- Help Page -->
+		<div data-role="page" id="helpPage">
+			<div data-role="header" data-position="inline" data-theme="b">
+				<h1>Need help</h1>
+				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a></div>
+			<div data-role="content" data-theme="a">
+				<!-- Content -->
+				<p>Bla bla bla bla bla.</p>
+				<!-- /Content -->
+			</div>
+		</div>
+		<!-- /Help Page -->
+		
+		<!-- About Page -->
+		<div data-role="page" id="aboutPage">
+			<div data-role="header" data-position="inline" data-theme="a">
+				<h1>Info</h1>
+				<a data-role="none" class="backBtn opacity" data-transition="slide" href="javascript:history.back();"></a></div>
+			<div data-role="content" align="center">
+				<h3>Der Kurs Koffer App</h3>
+				<p>Version 1.0</p>
+				<p>Copyright &copy 2013. Alle Rechte vorbehalten.</p>
+				<p>Entwickler: <b>Orif Orifov</b></p>
+				<p>Das gemeinsame Projekt der Johannes Kepler Universität und das Österreichisches Rotes Kreuz</p>
+				<p><a href="mailto:orif.zade@gmail.com">orif.zade@gmail.com</a></p>
+				<p><img height="125" src="img/jku.png" /></p>
+			</div>
+		</div>
+		<!-- /About Page -->
+    </body>
+</html>
