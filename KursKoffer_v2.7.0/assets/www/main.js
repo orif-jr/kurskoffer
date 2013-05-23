@@ -179,18 +179,18 @@ function moveToCourse() {
 
 /* Checking the user-entered parameters */
 function handleLogin() {
-	console.log("Step 1 Orif Orif");
+	console.log("Step 1: Checkpoint");
 	var form = $("#paramedicLogin");
 	//disable the button so we can't resubmit while we wait
-	$("#submitButton", form).attr("disabled", "disabled");
+	$("#submit1Btn", form).attr("disabled", "disabled");
 	var u = $("#username", form).val();
 	var p = $("#password", form).val();
+	console.log("Step 2: Checkpoint");
 	if(u!= '' && p!= '') {
-		console.log("Step 2 Orif Orif");
 		$.post("http://10.0.2.2/kurskoffer/checklogin.php", {username:u, password:p}, function(data, textStatus) {
 			console.log("returned from post " + textStatus);
+			console.log("Step 3: Checkpoint");
 			if(data!='') {
-				console.log("Step 3 Orif Orif");
 				//store user data (uname, passwd and token)
 				localStorage.setItem("username", "" +u+ "");
 				localStorage.setItem("password", "" +p+ "");
@@ -198,16 +198,27 @@ function handleLogin() {
 				
 				$.mobile.changePage("index.html#homePage1", {transition: "slide"});
 			} else {
-				console.log("Step 4 Orif Orif");
+				console.log("Step 4: Checkpoint");
 				navigator.notification.alert("Anmeldung fehlgeschlagen! Bitte probieren Sie noch einmal", function() {});
-				$("#submitButton").removeAttr("disabled");
+				$("#submit1Btn").removeAttr("disabled");
 			}
 		}, "json");
 	} else {
 		navigator.notification.alert("Geben Sie Irhen Benutzername und Passwort", function() {});
-		$("#submitButton").removeAttr("disabled");
+		$("#submit1Btn").removeAttr("disabled");
 	}
 	return false;
+}
+
+/* PRE_Authentication check for Username and Password */
+function checkPreAuth() {
+	console.log('checkPreAuth');
+    var form = $('#paramedicLogin');
+    if(localStorage.getItem('username') != undefined && localStorage.getItem('password') != undefined) {
+        $('#username', form).val(localStorage.getItem('username'));
+        $('#password', form).val(localStorage.getItem('password'));
+        handleLogin();
+    }
 }
 
 /* Schedules Sync device calendar with moodle (import of iCal) */
