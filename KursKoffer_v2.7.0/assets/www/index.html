@@ -21,7 +21,7 @@
     <!-- Start of first page -->
     	<div data-role="page" id="initialPage">
 			<div data-role="header" data-position="inline"  data-theme="a">
-				<h1>cloudLearn</h1>
+				<h1>mLaaS</h1>
 				<a data-role="none" class="dummyBtn opacity" href="#"></a>
 				<a data-role="none" class="aboutBtn opacity" data-transition="slide" href="#aboutPage"></a></div>
 			<div data-role="content" align="center">
@@ -32,9 +32,9 @@
 					<label for="coursetype">List of available courses:</label>
 					<select name="coursetype" id="coursetype">
 						<option value="0" selected="selected" disabled>Select here...</option>
-						<option value="1">OÖ Rotes Kreuz</option>
+						<option value="1">Rettungssanitäter ÖRK</option>
 						<option value="2">Samariterbund Linz</option>
-						<option value="3">PKA-Akademie Wels</option>
+						<option value="3">History of Armenia</option>
 					</select><br /><br />
 					<button type="button" id="startBtn" data-theme="a" onclick="moveToCourse()">Start</button>
 				</form><!-- /Content -->
@@ -91,6 +91,30 @@
 		</div>
 		<!-- / 2.Samariterbund Linz -->
 		
+		<!-- 3.History of Armenia --> 
+    	<div data-role="page" id="armeniahistoryPage">
+			<div data-role="header" data-position="inline" data-theme="d">
+				<h1>Authentication</h1>
+				<a data-role="none" class="dummyBtn opacity" href="#"></a>
+				<a data-role="none" class="aboutBtn opacity" data-transition="slide" href="#aboutPage"></a></div>
+			<div data-role="content">
+				<!-- Content -->
+				<div align="center">
+					<h1>History of Armenia</h1>
+					<img height="125" src="img/coin_tigranes.png" /></div>
+				<p><a data-transition="slide" href="#forgotPass">Forgot password?</a></p>
+				<p><a data-transition="slide" href="#helpPage">Need a help?</a></p>
+				<form id="armeniaLogin">
+					<div data-role="fieldcontain" class="ui-hide-label">
+						<input type="text" name="username3" id="username3" value="" placeholder="Username" /></div>
+					<div data-role="fieldcontain" class="ui-hide-label">
+						<input type="password" name="password3" id="password3" value="" placeholder="Password" /></div>
+					<input type="submit" value="Login" id="submitBtn3" />
+				</form><!-- /Content -->
+			</div>
+		</div>
+		<!-- / 3.History of Armenia -->
+		
 		<!-- 1.Rettungssanitäter: Main page -->
 		<div data-role="page" id="homePage1">
 			<div data-role="header" data-position="inline" data-theme="b">
@@ -99,9 +123,6 @@
 				<a data-role="none" data-transition="slide" class="settingsBtn opacity" href="#settingsPage" onclick="loadSettings()"></a></div>
 			<div data-role="content">
 				<p>Willkommen im Lernsystem <b class="userName"></b></p><br />
-				<script type="text/javascript">
-					$('.userName').html(localStorage.getItem('username'));
-				</script>
 				<!-- GridView -->
 				<div id="gridview" class="ui-grid-a" align="center">
 					<div class="ui-block-a">

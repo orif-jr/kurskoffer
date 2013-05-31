@@ -173,7 +173,7 @@ function moveToCourse() {
 	} else if (course == '2') {
 		$.mobile.changePage("index.html#samariterbundPage", {transition: "flow"});
 	} else if (course == '3') {
-		alert('This course is not implemented yet');
+		$.mobile.changePage("index.html#armeniahistoryPage", {transition: "flow"});
 	}
 }
 
@@ -187,7 +187,7 @@ function handleLogin() {
 	var p = $("#password", form).val();
 	console.log("Step 2: Checkpoint");
 	if(u!= '' && p!= '') {
-		$.post("http://10.0.2.2/kurskoffer/checklogin.php", {username:u, password:p}, function(data, textStatus) {
+		$.post("http://cloud.c3lab.tk.jku.at/kurskoffer/checklogin.php", {username:u, password:p}, function(data, textStatus) {
 			console.log("returned from post " + textStatus);
 			console.log("Step 3: Checkpoint");
 			if(data!='') {
@@ -197,6 +197,8 @@ function handleLogin() {
 				localStorage.setItem("token", ""+data.token+"");
 				
 				$.mobile.changePage("index.html#homePage1", {transition: "slide"});
+				//display user's name in welcome page
+				$('.userName').html(localStorage.getItem('username'));
 			} else {
 				console.log("Step 4: Checkpoint");
 				navigator.notification.alert("Anmeldung fehlgeschlagen! Bitte probieren Sie noch einmal", function() {});
@@ -307,7 +309,6 @@ function getCourseList() {
 		navigator.notification.alert("Error: can not find user token", function() {});
 	}
 	return false;
-	courseList();
 }
 
 /* Cordova: File API - read & save data into storeage (json) */
@@ -343,6 +344,8 @@ function gotFileWriter(writer) {
 		console.log("checkpoint: write success!");
 	};
 	writer.write(jsonData);
+	//REcall `courseList()` to display refreshed course-data from Moodle
+	courseList();
 }
 function onFSError(err) {
 	console.log(err.code);
