@@ -227,9 +227,9 @@ function checkPreAuth() {
 function doSync() {
 	var usertkn = localStorage.getItem("token");
 	if(usertkn != '') {
-		$.post("http://localhost/kurskoffer/kalender.php", {token:usertkn}, function(data) {
+		$.post("http://cloud.c3lab.tk.jku.at/kurskoffer/kalender.php", {token:usertkn}, function(data) {
 			if(data!='') {
-				//store calendar data to the device
+				//import the calendar data (saving)
 				// bla bla bla
 			} else {
 				navigator.notification.alert("Sync ist fehlgeschlagen! Bitte probieren Sie noch einmal", function() {});
@@ -363,16 +363,17 @@ function wikiGenerate() {
 }
 
 /* FirstAid: MenuButton procedure */
-//function firstAid() {
-//	window.open('https://play.google.com/store/apps/details?id=at.fh.firstaid');
-//	window.plugins.webintent.startActivity({
-//		action: WebIntent.ACTION_VIEW,
-//		url: 'at.fh.firstaid'},
-//	    function() {},
-//	    function() {window.open('https://play.google.com/store/apps/details?id=at.fh.firstaid')};
-//	    function() {alert('Failed to open URL via Android Intent')};
-//	});
-//}
+function firstAid() {
+	window.open('https://play.google.com/store/apps/details?id=at.fh.firstaid');
+/*
+	window.plugins.webintent.startActivity({
+		action: WebIntent.ACTION_VIEW,
+		url: 'at.fh.firstaid://MobSanMain'},
+	    function() {};
+	    function(e) {alert('Failed to start application. Perhaps you need to reinstall it')};
+	});
+*/
+}
 
 /* Saving the changes in SETTINGS */
 function saveSettings() {
@@ -385,8 +386,8 @@ function saveSettings() {
 	// set new 'sound' & 'vibra' values
 	localStorage.setItem("sound", ""+setS+"");
 	localStorage.setItem("vibra", ""+setV+"");
-	
-	alert('Settings are saved ' +setS+ ' & '+setV, '', 'Info', 'Ok');
+	console.log("Settings data are saved!");
+	//alert('Settings are saved ' +setS+ ' & '+setV, '', 'Info', 'Ok');
 }
 
 /* Loading the SETTINGS data */
@@ -395,16 +396,14 @@ var getVibra = localStorage.getItem("vibra");
 function loadSettings() {
 	var form = $("#settingsForm");
 	if(getSound != undefined && getVibra != undefined) {
-		console.log("Load settings data HURRAY");
-		alert("sound "+getSound+ " vibra"+getVibra);		
+		console.log("Settings data are loaded!");
+		//alert("sound: "+getSound+ " vibra: "+getVibra);		
 		if(getSound == "1") {
 			document.getElementById('sound').options[1].selected = true;
 		}
 		if(getVibra == "1") {
 			document.getElementById('vibration').options[1].selected = true;
 		}
-	} else {
-		alert("Settings are 'default'");
 	}
 }
 
