@@ -3,6 +3,14 @@
     http://www.apache.org/licenses/LICENSE-2.0
 */
 
+var LOCAL = false;
+var KURSKOFFER_URL = "http://cloud.c3lab.tk.jku.at/kurskoffer/";
+
+if(LOCAL) {
+	// adjust some settings if we are running in local mode
+	KURSKOFFER_URL = "http://10.0.2.2/kurskoffer/"
+}
+
 var deviceInfo = function() {
     document.getElementById("platform").innerHTML = device.platform;
     document.getElementById("version").innerHTML = device.version;
@@ -144,13 +152,8 @@ function toggleCompass() {
 }
 
 function init() {
-    // the next line makes it impossible to see Contacts on the HTC Evo since it
-    // doesn't have a scroll button
-    // document.addEventListener("touchmove", preventBehavior, false);
-	// document.addEventListener("deviceready", deviceInfo, true);
     document.addEventListener("deviceready", onDeviceReady, false);
 }
-
 
 /*
  * KursKoffer Code Procedure
@@ -177,36 +180,58 @@ function moveToCourse() {
 	}
 }
 
+function handleLoginSuccess(user, password, token) {
+	//store user data (uname, passwd and token)
+	console.log('login for ' + user + ' ok .. updating gui');
+	localStorage.setItem("username", ""  +user + "");
+	localStorage.setItem("password", "" + password + "");
+	localStorage.setItem("token", ""+ token +"");
+	$.mobile.changePage("index.html#homePage1", {transition: "slide"});
+	//display user's name in welcome page
+	$('.userName').html(localStorage.getItem('username'));
+}
+
 /* Checking the user-entered parameters */
 function handleLogin() {
-	console.log("Step 1: Checkpoint");
+	console.log("Performing login to middleware service");
 	var form = $("#paramedicLogin");
 	//disable the button so we can't resubmit while we wait
 	$("#submit1Btn", form).attr("disabled", "disabled");
 	var u = $("#username", form).val();
 	var p = $("#password", form).val();
-	console.log("Step 2: Checkpoint");
 	if(u!= '' && p!= '') {
-		$.post("http://cloud.c3lab.tk.jku.at/kurskoffer/checklogin.php", {username:u, password:p}, function(data, textStatus) {
-			console.log("returned from post " + textStatus);
-			console.log("Step 3: Checkpoint");
-			if(data!='') {
-				//store user data (uname, passwd and token)
-				localStorage.setItem("username", "" +u+ "");
-				localStorage.setItem("password", "" +p+ "");
-				localStorage.setItem("token", ""+data.token+"");
-				
-				$.mobile.changePage("index.html#homePage1", {transition: "slide"});
-				//display user's name in welcome page
-				$('.userName').html(localStorage.getItem('username'));
-			} else {
-				console.log("Step 4: Checkpoint");
-				navigator.notification.alert("Anmeldung fehlgeschlagen! Bitte probieren Sie noch einmal", function() {});
-				$("#submit1Btn").removeAttr("disabled");
-			}
-		}, "json");
+		console.log("Posting login data to service");
+		var result = $.ajax({
+			type: "POST",
+            url: KURSKOFFER_URL + "checklogin.php",
+            data: {username:u, password:p},
+//            dataType: 'application/json',
+            success: function(data) {
+            	console.log("returned from post " + data);
+    			if(data!='') {
+    				handleLoginSuccess(u, p, data);
+    			} else {
+    				console.log("No data was returned from service");
+    				navigator.notification.alert("Anmeldung fehlgeschlagen! Bitte probieren Sie noch einmal", function() {});
+    				$("#submit1Btn").removeAttr("disabled");
+    			}
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                console.log(xhr);
+                console.log(xhr.responseText);
+                console.log(textStatus);
+                console.log(errorThrown);
+            }
+        });
+		console.log(result);
+		console.log(result.responseText);
+		if(result && json && result.responseText != undefined) {
+			var json = jQuery.parseJSON(result.responseText);
+			console.log('returned result');
+			handleLoginSuccess(u, p, json);
+		}
 	} else {
-		navigator.notification.alert("Geben Sie Irhen Benutzername und Passwort", function() {});
+		navigator.notification.alert("Geben Sie Ihren Benutzername und Passwort ein", function() {});
 		$("#submit1Btn").removeAttr("disabled");
 	}
 	return false;
@@ -227,7 +252,7 @@ function checkPreAuth() {
 function doSync() {
 	var usertkn = localStorage.getItem("token");
 	if(usertkn != '') {
-		$.post("http://cloud.c3lab.tk.jku.at/kurskoffer/kalender.php", {token:usertkn}, function(data) {
+		$.post(KURSKOFFER_URL + "kalender.php", {token:usertkn}, function(data) {
 			if(data!='') {
 				//import the calendar data (saving)
 				// bla bla bla
@@ -299,8 +324,9 @@ function sTopic(chapter, title) {
 var jsonData = '';
 function getCourseList() {
 	var usertkn = localStorage.getItem("token");
+	usertkn = jQuery.trim(usertkn);
 	if(usertkn != '') {
-		$.post("http://10.0.2.2/kurskoffer/transform.php", {token:usertkn}, function(data) {
+		$.post(KURSKOFFER_URL + "transform.php", {token:usertkn}, function(data) {
 			if(data!='') {
 				//call to 'saveCourseToFile()' function
 				jsonData = data;
