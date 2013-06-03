@@ -147,7 +147,7 @@ function init() {
     // the next line makes it impossible to see Contacts on the HTC Evo since it
     // doesn't have a scroll button
     // document.addEventListener("touchmove", preventBehavior, false);
-//    document.addEventListener("deviceready", deviceInfo, true);
+	// document.addEventListener("deviceready", deviceInfo, true);
     document.addEventListener("deviceready", onDeviceReady, false);
 }
 
@@ -277,6 +277,7 @@ function courseList() {
 }
 
 /* Display 'content' JSON element related to the clicked 'title' */
+var keyword = '';
 function sTopic(chapter, title) {
 	//'read action' from file
 	action = 'r'; readWriteFile();
@@ -289,6 +290,9 @@ function sTopic(chapter, title) {
 	    	$('#cContent').html(myData2[i].content);
 	    }
 	}
+	//gettig keyword of the clicked topic
+	keyword = document.getElementById('kword').value;
+	console.log('sTopic(): Got a keyword - ' +keyword);
 }
 
 /* Get CourseList from the Moodle */
@@ -352,7 +356,8 @@ function onFSError(err) {
 }
 
 function wikiGenerate() {
-	var wtopic = 'Haut';
+	var wtopic = keyword;
+	console.log('wikiGenerate(): Got a Keyword - ' +wtopic);
 	$.getJSON('http://de.wikipedia.org/w/api.php?action=parse&page='+wtopic+'&prop=text&format=json&callback=?', function(data) {
 		// display generated content in 'id=cContent'
         $('#cContent').html(data.parse.text['*']);
@@ -370,7 +375,7 @@ function firstAid() {
 		action: WebIntent.ACTION_VIEW,
 		url: 'at.fh.firstaid://MobSanMain'},
 	    function() {};
-	    function(e) {alert('Failed to start application. Perhaps you need to reinstall it')};
+	    function() {alert('Failed to open eErsteHilfe App')};
 	});
 */
 }
