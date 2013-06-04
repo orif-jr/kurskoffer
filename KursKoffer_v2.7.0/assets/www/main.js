@@ -574,7 +574,7 @@ function sTopic(chapter, title) {
 	    }
 	}
 	
-	kofferModel.getProgress().trackAccess(chapter);
+	kofferModel.getProgress().trackAccess(title);
 	
 	//gettig keyword of the clicked topic
 	keyword = document.getElementById('kword').value;
