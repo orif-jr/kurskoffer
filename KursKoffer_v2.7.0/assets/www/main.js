@@ -178,6 +178,9 @@ function KofferModel(u, p, t) {
 	/** JSON based data model */
 	this.jsonModel = null;
 	
+	/** parsed model -> we did this way too often in the code */
+	this.parsedModel = null;
+	
 	/** If not null we call this function when we got new json data */
 	this.renderingListener = null;
 	
@@ -259,7 +262,7 @@ function KofferModel(u, p, t) {
 				file.file(function(file) {
 					var reader = new FileReader();
 					reader.onloadend = function(evt) {
-						model.jsonModel = evt.target.result;
+						model.setJsonModel(evt.target.result);
 						console.log('file was read and set as model.jsonModel');
 					};
 					reader.readAsText(file);
@@ -284,7 +287,7 @@ function KofferModel(u, p, t) {
 	};
 
 	/** Check whether a model was correctly loaded from local storage or from the webservice */
-	this.hasModelLoaded = function() {
+	this.isModelLoaded = function() {
 		return this.jsonModel != null;
 	};
 	
@@ -305,11 +308,10 @@ function KofferModel(u, p, t) {
 				if(data!='') {
 					// set to model for application
 					// TODO should we check here if we got correct JSON code?
-					model.jsonModel = data;
+					model.setJsonModel(data);
 					// if listener is not null call it to render
 					if(model.renderingListener != null) {
-						var myData = JSON.parse(model.getJsonModel());
-						model.renderingListener(myData);
+						model.renderingListener(model.getModel());
 						model.renderingListener = null;
 					}
 					// write to local file
@@ -337,6 +339,22 @@ function KofferModel(u, p, t) {
 	/** Return the currently loaded JSON model */
 	this.getJsonModel = function() {
 		return this.jsonModel;
+	};
+	
+	this.setJsonModel = function(json) {
+		this.jsonModel = json;
+		this.parsedModel = null;
+	};
+	
+	this.getModel = function() {
+		if(!this.isModelLoaded()) {
+			return undefined;
+		}else{
+			if(this.parsedModel == null) {
+				this.parsedModel = JSON.parse(this.getJsonModel());
+			}
+			return this.parsedModel;
+		}
 	};
 }
 
@@ -498,9 +516,9 @@ function renderCourseList(myData) {
 /* Course: MenuButton procedure */
 var action = '', jsonString = '';
 function courseList() {
-	if(kofferModel.hasModelLoaded()) {
+	if(kofferModel.isModelLoaded()) {
 		console.log('found locally cached moodle data .. trying to parse');
-		var myData = JSON.parse(kofferModel.getJsonModel());
+		var myData = kofferModel.getModel();
 		console.log('found locally cached moodle data .. successfully parsed');
 		// show the loaded data
 		renderCourseList(myData);
@@ -517,9 +535,11 @@ function courseList() {
 var keyword = '';
 function sTopic(chapter, title) {
 	//'read action' from file
-	action = 'r'; readWriteFile();
+	// TODO reading not necessary since the model is actually stored in kofferModel
+//	action = 'r'; readWriteFile();
 	//filled 'myData' variable with contents
-	var myData2 = JSON.parse(jsonString);
+//	var myData2 = JSON.parse(jsonString);
+	var myData2 = kofferModel.getModel();
 	
 	for (var i = 0; i < myData2.length; i++) {
 	    if (myData2[i].chapter == chapter && myData2[i].title == title) {
