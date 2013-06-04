@@ -178,6 +178,9 @@ function KofferModel(u, p, t) {
 	/** JSON based data model */
 	this.jsonModel = null;
 	
+	/** If not null we call this function when we got new json data */
+	this.renderingListener = null;
+	
 	/** Print basic information about this model to console */
 	this.logInfo = function() {
 		console.log('kofferName: ' + this.kofferName);
@@ -303,6 +306,12 @@ function KofferModel(u, p, t) {
 					// set to model for application
 					// TODO should we check here if we got correct JSON code?
 					model.jsonModel = data;
+					// if listener is not null call it to render
+					if(model.renderingListener != null) {
+						var myData = JSON.parse(model.getJsonModel());
+						model.renderingListener(myData);
+						model.renderingListener = null;
+					}
 					// write to local file
 					model.storeJsonModel();
 				} else {
@@ -313,6 +322,11 @@ function KofferModel(u, p, t) {
 			console.log('Error no token was set');
 			navigator.notification.alert("Error: Cannot access Moodle no user token was set", function() {});
 		}
+	};
+	
+	/** Allows to set a rendering listener */
+	this.setRenderingListener = function(listener) {
+		this.renderingListener = listener;
 	};
 	
 	/** Load the Json Model from remote service */
@@ -423,6 +437,7 @@ function handleLogin() {
 }
 
 /* PRE_Authentication check for Username and Password */
+// TODO never called?
 function checkPreAuth() {
 	console.log('checkPreAuth');
     var form = $('#paramedicLogin');
@@ -450,6 +465,36 @@ function doSync() {
 	}
 }
 
+/**
+ * Renders a data object to the course list panel
+ */
+function renderCourseList(myData) {
+	// TODO remove? caused an error which basically halted further JS execution
+//	var dContent = function(event) {
+//	    $c_content.html($(this).data('content'));
+//	}
+	
+	var courseList = $('#courseList');
+	var html = '';
+	var chapterList = [];
+	
+	// TODO remove? see above
+//	courseList.on('click', 'div', dContent);
+	
+	var first = true;
+	$.each(myData, function(index, item) {
+	    if ($.inArray(item.chapter, chapterList) === -1) {
+	        chapterList.push(item.chapter);
+	        if(!first) { html += '</div>'; }
+	        html += '<div data-role="collapsible"><h3>' + item.chapter + '</h3>';
+	        first = false;
+	    }
+	    html += '<p><a href="#singleContent" onclick="sTopic(\'' + item.chapter + '\', \'' + item.title + '\')">' + item.title + '</a></p>';
+	});
+	if(!first) { html += '</div>'; }
+	courseList.html(html);
+}
+
 /* Course: MenuButton procedure */
 var action = '', jsonString = '';
 function courseList() {
@@ -457,37 +502,14 @@ function courseList() {
 		console.log('found locally cached moodle data .. trying to parse');
 		var myData = JSON.parse(kofferModel.getJsonModel());
 		console.log('found locally cached moodle data .. successfully parsed');
-	}
-	//'read action' from file
-//	action = 'r'; readWriteFile();
-	//filled 'myData' variable with contents
-//	var myData = JSON.parse(jsonString);
-	
-	if (myData != '' || myData != undefined) {
-		var dContent = function(event) {
-		    $c_content.html($(this).data('content'));
-		}
-		
-		var $c_list = $('#courseList');
-		var html = '';
-		var chapterList = [];
-		
-		$c_list.on('click', 'div', dContent);
-		
-		var first = true;
-		$.each(myData, function(index, item) {
-		    if ($.inArray(item.chapter, chapterList) === -1) {
-		        chapterList.push(item.chapter);
-		        if(!first) { html += '</div>'; }
-		        html += '<div data-role="collapsible"><h3>' + item.chapter + '</h3>';
-		        first = false;
-		    }
-		    html += '<p><a href="#singleContent" onclick="sTopic(\'' + item.chapter + '\', \'' + item.title + '\')">' + item.title + '</a></p>';
-		});
-		if(!first) { html += '</div>'; }
-		$c_list.html(html);
-	} else {
-		$('#cList').html('<div align="center">Der Kurs ist leer, bitte aktualisieren</div>');
+		// show the loaded data
+		renderCourseList(myData);
+	}else{
+		// data is not ready, just register the render method and request an update
+		// it is not very likely that this case occurs?
+		$('#cList').html('<div align="center">Daten werden abgerufen</div>');
+		kofferModel.setRenderingListener(renderCourseList);
+		kofferModel.loadJsonModelFromService();
 	}
 }
 
@@ -511,6 +533,7 @@ function sTopic(chapter, title) {
 }
 
 /* Get CourseList from the Moodle */
+// TODO defined but never called
 var jsonData = '';
 function getCourseList() {
 	var usertkn = localStorage.getItem("token");
