@@ -341,11 +341,13 @@ function KofferModel(u, p, t) {
 		return this.jsonModel;
 	};
 	
+	/** Set a new json model retrieved from local Storage or from the moodle service */
 	this.setJsonModel = function(json) {
 		this.jsonModel = json;
 		this.parsedModel = null;
 	};
 	
+	/** Get the parsed model for rendering or access, parsing is peformed on demand if neccessary */
 	this.getModel = function() {
 		if(!this.isModelLoaded()) {
 			return undefined;
@@ -440,13 +442,13 @@ function handleLogin() {
                 console.log(errorThrown);
             }
         });
-		console.log(result);
-		console.log(result.responseText);
-		if(result && json && result.responseText != undefined) {
-			var json = jQuery.parseJSON(result.responseText);
-			console.log('returned result');
-			handleLoginSuccess(u, p, json);
-		}
+//		console.log(result);
+//		console.log(result.responseText);
+//		if(result && json && result.responseText != undefined) {
+//			var json = jQuery.parseJSON(result.responseText);
+//			console.log('returned result');
+//			handleLoginSuccess(u, p, json);
+//		}
 	} else {
 		navigator.notification.alert("Geben Sie Ihren Benutzername und Passwort ein", function() {});
 		$("#submit1Btn").removeAttr("disabled");
