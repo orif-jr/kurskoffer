@@ -155,6 +155,111 @@ function init() {
     document.addEventListener("deviceready", onDeviceReady, false);
 }
 
+/**
+ * Datamodel of Kurskoffer
+ * 
+ * it is able to store and load some data from and to local storage
+ * 
+ * @param u
+ * @param p
+ * @param t
+ * @returns
+ */
+function KofferModel(u, p, t) {
+	this.kofferName = 'Kurskoffer';
+	this.username = u;
+	this.password = p;
+	this.token = t;
+	
+	this.jsonModel = null;
+	
+	this.logInfo = function() {
+		console.log('kofferName: ' + this.kofferName);
+	};
+	
+	this.store = function() {
+		console.log('store to local storage');
+		localStorage.setItem('username', this.username);
+		localStorage.setItem('password', this.password);
+		localStorage.setItem('token', this.token);
+	};
+	
+	this.load = function() {
+		console.log('read from local storage');
+		this.username = localStorage.getItem('username');
+		this.password = localStorage.getItem('password');
+	};
+	
+	this.getUserName = function() {
+		return this.username;
+	};
+	
+	this.getPassword = function() {
+		return this.password;
+	};
+	
+	this.getToken = function() {
+		return this.token;
+	};
+	
+	this.hasCredentials = function() {
+		return this.username != null && this.password != null;
+	};
+	
+	this._requestFileSystem = function(writing, model) {
+		console.log('requesting access to local filesystem');
+		window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(filesystem) {
+			console.log('file system access was granted');
+			model._requestFile(filesystem, 'course.oerk', writing, model);
+		}, function(err) {
+			console.log('file system access was denied with error ' + err.code);
+			navigator.notification.alert('Your system does not support file system access we cannot operate in offline mode!', function() {});
+		});
+	};
+	
+	this._requestFile = function(filesystem, filename, writing, model) {
+		console.log('requesting access to ' + filename + ' for ' + (writing ? 'writing' : 'reading'));
+		filesystem.root.getFile(filename, {create:true, exclusive:false}, function(file) {
+			console.log('access to ' + filename + ' was granted');
+			if(!writing) {
+				file.file(function(file) {
+					var reader = new FileReader();
+					reader.onloadend = function(evt) {
+						model.jsonModel = evt.target.result;
+						console.log('file was read and set as model.jsonModel');
+					};
+					reader.readAsText(file);
+				}, function() {
+					console.log('error on reading file - perhaps not existent or empty');
+				});
+			}else{
+				file.createWriter(function(writer) {
+					writer.write(model.jsonModel);
+				}, function() {
+					console.log('error on writing file - we do not report this to the user');
+				});
+			}
+		}, function() {
+			console.log('access to ' + filename + ' was denied');
+			navigator.notification.alert('Your system does not support file system access we cannot operate in offline mode!', function() {});
+		});
+	};
+	
+	this.hasModelLoaded = function() {
+		return this.jsonModel != null;
+	};
+	
+	this.loadJsonModel = function() {
+		this._requestFileSystem(false, this);
+	};
+	
+	this.getJsonModel = function() {
+		return this.jsonModel;
+	};
+}
+
+var kofferModel = null;
+
 /*
  * KursKoffer Code Procedure
  * Below list of functions are main part of the app
@@ -165,6 +270,14 @@ function onDeviceReady() {
 	navigator.splashscreen.hide();
     // register the event listener
 	document.addEventListener("backbutton", onBackKeyDown, false);
+	kofferModel = new KofferModel(null, null, null);
+	kofferModel.load();
+	if(kofferModel.hasCredentials()) {
+		// if credentials were loaded from local storage put the to form
+		var form = $('#paramedicLogin');
+        $('#username', form).val(kofferModel.getUserName());
+        $('#password', form).val(kofferModel.getPassword());
+	}
 }
 
 /* Moving to the appropriate course chosen by user */
@@ -181,14 +294,18 @@ function moveToCourse() {
 }
 
 function handleLoginSuccess(user, password, token) {
+	kofferModel = new KofferModel(user, password, token);
+	kofferModel.logInfo();
+	kofferModel.store();
+	kofferModel.loadJsonModel();
 	//store user data (uname, passwd and token)
 	console.log('login for ' + user + ' ok .. updating gui');
-	localStorage.setItem("username", ""  +user + "");
-	localStorage.setItem("password", "" + password + "");
-	localStorage.setItem("token", ""+ token +"");
+//	localStorage.setItem("username", ""  +user + "");
+//	localStorage.setItem("password", "" + password + "");
+//	localStorage.setItem("token", ""+ token +"");
 	$.mobile.changePage("index.html#homePage1", {transition: "slide"});
 	//display user's name in welcome page
-	$('.userName').html(localStorage.getItem('username'));
+	$('.userName').html(kofferModel.getUserName());
 }
 
 /* Checking the user-entered parameters */
@@ -268,10 +385,15 @@ function doSync() {
 /* Course: MenuButton procedure */
 var action = '', jsonString = '';
 function courseList() {
+	if(kofferModel.hasModelLoaded()) {
+		console.log('found locally cached moodle data .. trying to parse');
+		var myData = JSON.parse(kofferModel.getJsonModel());
+		console.log('found locally cached moodle data .. successfully parsed ' + myData);
+	}
 	//'read action' from file
-	action = 'r'; readWriteFile();
+//	action = 'r'; readWriteFile();
 	//filled 'myData' variable with contents
-	var myData = JSON.parse(jsonString);
+//	var myData = JSON.parse(jsonString);
 	
 	if (myData != '' || myData != undefined) {
 		var dContent = function(event) {
