@@ -166,17 +166,24 @@ function init() {
  * @returns
  */
 function KofferModel(u, p, t) {
-	this.kofferName = 'Kurskoffer';
-	this.username = u;
-	this.password = p;
-	this.token = t;
 	
+	/** Just a static name for the model */
+	this.kofferName = 'Kurskoffer';
+	
+	/** User Information */
+	this.username = jQuery.trim(u);
+	this.password = jQuery.trim(p);
+	this.token = jQuery.trim(t);
+	
+	/** JSON based data model */
 	this.jsonModel = null;
 	
+	/** Print basic information about this model to console */
 	this.logInfo = function() {
 		console.log('kofferName: ' + this.kofferName);
 	};
 	
+	/** Store login data to local storage */
 	this.store = function() {
 		console.log('store to local storage');
 		localStorage.setItem('username', this.username);
@@ -184,28 +191,49 @@ function KofferModel(u, p, t) {
 		localStorage.setItem('token', this.token);
 	};
 	
+	/**
+	 * Read login data from local storage
+	 * Does not read token, since this needs to be retrieved from moodle again
+	 *  */
 	this.load = function() {
 		console.log('read from local storage');
 		this.username = localStorage.getItem('username');
 		this.password = localStorage.getItem('password');
 	};
 	
+	/**
+	 * Return users name
+	 */
 	this.getUserName = function() {
 		return this.username;
 	};
 	
+	/**
+	 * Return password
+	 */
 	this.getPassword = function() {
 		return this.password;
 	};
 	
+	/**
+	 * Return authentication token
+	 */
 	this.getToken = function() {
 		return this.token;
 	};
 	
+	/**
+	 * Check if credentials are set (were loaded form local storage)
+	 */
 	this.hasCredentials = function() {
 		return this.username != null && this.password != null;
 	};
 	
+	/**
+	 * Private Method that performs a file system request
+	 * writing may be true or false to indicate if the model is written or read
+	 * we need to pass the model (object/this) that gets loaded or stored
+	 */
 	this._requestFileSystem = function(writing, model) {
 		console.log('requesting access to local filesystem');
 		window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(filesystem) {
@@ -217,6 +245,9 @@ function KofferModel(u, p, t) {
 		});
 	};
 	
+	/**
+	 * Private Method that performs the details of file handling
+	 */
 	this._requestFile = function(filesystem, filename, writing, model) {
 		console.log('requesting access to ' + filename + ' for ' + (writing ? 'writing' : 'reading'));
 		filesystem.root.getFile(filename, {create:true, exclusive:false}, function(file) {
@@ -231,6 +262,10 @@ function KofferModel(u, p, t) {
 					reader.readAsText(file);
 				}, function() {
 					console.log('error on reading file - perhaps not existent or empty');
+					// it is only null on a freshly constructed object
+					if(model.jsonModel == null) {
+						model.loadJsonModelFromService();
+					}
 				});
 			}else{
 				file.createWriter(function(writer) {
@@ -244,15 +279,48 @@ function KofferModel(u, p, t) {
 			navigator.notification.alert('Your system does not support file system access we cannot operate in offline mode!', function() {});
 		});
 	};
-	
+
+	/** Check whether a model was correctly loaded from local storage or from the webservice */
 	this.hasModelLoaded = function() {
 		return this.jsonModel != null;
 	};
 	
+	/** Loads the Json from local file */
 	this.loadJsonModel = function() {
 		this._requestFileSystem(false, this);
 	};
 	
+	/** Stores the model to the filesystem */
+	this.storeJsonModel = function() {
+		this._requestFileSystem(true, this);
+	};
+	
+	/** Private Method worker for: Load the Json Model from remote service */
+	this._loadJsonModelFromService = function(model) {
+		if(this.token != '') {
+			$.post(KURSKOFFER_URL + "transform.php", { token:this.token }, function(data) {
+				if(data!='') {
+					// set to model for application
+					// TODO should we check here if we got correct JSON code?
+					model.jsonModel = data;
+					// write to local file
+					model.storeJsonModel();
+				} else {
+					navigator.notification.alert("Error: server response is emty", function() {});
+				}
+			}, "json");
+		}else{
+			console.log('Error no token was set');
+			navigator.notification.alert("Error: Cannot access Moodle no user token was set", function() {});
+		}
+	};
+	
+	/** Load the Json Model from remote service */
+	this.loadJsonModelFromService = function() {
+		this._loadJsonModelFromService(this);
+	};
+	
+	/** Return the currently loaded JSON model */
 	this.getJsonModel = function() {
 		return this.jsonModel;
 	};
@@ -388,7 +456,7 @@ function courseList() {
 	if(kofferModel.hasModelLoaded()) {
 		console.log('found locally cached moodle data .. trying to parse');
 		var myData = JSON.parse(kofferModel.getJsonModel());
-		console.log('found locally cached moodle data .. successfully parsed ' + myData);
+		console.log('found locally cached moodle data .. successfully parsed');
 	}
 	//'read action' from file
 //	action = 'r'; readWriteFile();

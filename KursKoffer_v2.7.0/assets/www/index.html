@@ -148,7 +148,7 @@
 			<div data-role="header" data-position="inline" data-theme="b">
 				<h1>Kurse</h1>
 				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a>
-				<a data-role="none" class="refreshBtn opacity" data-transition="slide" href="#" onclick="getCourseList();return false;"></a></div>
+				<a data-role="none" class="refreshBtn opacity" data-transition="slide" href="#" onclick="kofferModel.loadJsonModelFromService();return false;"></a></div>
 			<div data-role="content" id="cList">
 				<!-- collapsible sets (accordion) -->
 				<div data-role="collapsible-set" id="courseList" data-mini="true" data-collapsed-icon="arrow-r" data-expanded-icon="arrow-d" data-inset="false">
