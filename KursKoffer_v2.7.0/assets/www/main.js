@@ -156,6 +156,22 @@ function init() {
 }
 
 /**
+ * Progress Model
+ * 
+ * it stores the progress for each topic
+ */
+function ProgressModel(user) {
+	this.username = user;
+	
+	/** call this whenever a topic is touched */
+	this.trackAccess = function(chapter) {
+		$.post(KURSKOFFER_URL + "postProgress.php", { username:this.username, chapter:chapter }, function(data) {
+			// we can ignore the feedback from the service
+		});
+	};
+}
+
+/**
  * Datamodel of Kurskoffer
  * 
  * it is able to store and load some data from and to local storage
@@ -183,6 +199,9 @@ function KofferModel(u, p, t) {
 	
 	/** If not null we call this function when we got new json data */
 	this.renderingListener = null;
+	
+	/** Create a progress model */
+	this.progressModel = new ProgressModel(this.username);
 	
 	/** Print basic information about this model to console */
 	this.logInfo = function() {
@@ -357,6 +376,11 @@ function KofferModel(u, p, t) {
 			}
 			return this.parsedModel;
 		}
+	};
+	
+	/** Returns the initialized progress model */
+	this.getProgress = function() {
+		return this.progressModel;
 	};
 }
 
@@ -549,6 +573,9 @@ function sTopic(chapter, title) {
 	    	$('#cContent').html(myData2[i].content);
 	    }
 	}
+	
+	kofferModel.getProgress().trackAccess(chapter);
+	
 	//gettig keyword of the clicked topic
 	keyword = document.getElementById('kword').value;
 	console.log('sTopic(): Got a keyword - ' +keyword);
