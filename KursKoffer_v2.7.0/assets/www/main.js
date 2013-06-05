@@ -155,6 +155,364 @@ function init() {
     document.addEventListener("deviceready", onDeviceReady, false);
 }
 
+/**
+ * Progress Model
+ * 
+ * it stores the progress for each topic
+ */
+function ProgressModel(user) {
+	this.username = user;
+	
+	/** my read topic count */
+	this.readTopics = null;
+	
+	/** overall topic count */
+	this.overallTopics = null;
+	
+	/** how many have a better score */
+	this.countHigher = null;
+	
+	/** how many have lower score */
+	this.countLower = null;
+	
+	/** how many have the same score */
+	this.countSame = null;
+	
+	/** call this whenever a topic is touched */
+	this.trackAccess = function(chapter) {
+		var model = this;
+		$.post(KURSKOFFER_URL + "postProgress.php", { username:this.username, chapter:chapter }, function(data) {
+			model.getProgress();
+		});
+	};
+	
+	/** Private method that retrieves progress from backend */
+	this._retrieveProgress = function(model) {
+		jQuery.post(KURSKOFFER_URL + 'getProgress.php', {
+			username:this.username
+		}, function(data) {
+			data = jQuery.trim(data);
+			if(data != '') {
+				var result = JSON.parse(data);
+				// the database query retrieves this as string
+				model.readTopics = parseFloat(result.readTopics);
+				model.overallTopics = result.topicCount;
+				model.countHigher = result.countHigher;
+				model.countLower = result.countLower;
+				model.countSame = result.countSame;
+				console.log('readTopics ' + model.readTopics + ' overallTopics ' + model.overallTopics);
+				model._renderProgress();
+			}else{
+				console.log('did not retrieve a progress');
+			}
+		});
+	};
+	
+	/** render Progress to progress bar */
+	this._renderProgress = function() {
+		console.log('rendering progress to ui ' + this.readTopics);
+		$('#progressReadTopics').html('You have read ' + this.readTopics + ' topics out of ' + this.overallTopics + ' available topics');
+		$('#progressOverallTopics').html('You are doing better than ' + this.countLower + ' other users. You are on the same score with ' + this.countSame + ' other users and ' + this.countHigher + ' users have a better score than you');
+	};
+	
+	/** Get Progress from service backend */
+	this.getProgress = function() {
+		console.log('requesting progress from backend');
+		this._retrieveProgress(this);
+	};
+	
+	/** Render the highcarts diagrams */
+	this.updateCharts = function() {
+		var model = this;
+		// clean chart
+		$('#progressChartReading').html('');
+		$('#progressChartReading').highcharts({
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false,
+                credits: {enabled: false}
+            },
+            title: {
+                text: 'Learning Progress'
+            },
+            tooltip: {
+        	    pointFormat: '{series.name}: <b>{point.percentage}%</b>',
+            	percentageDecimals: 1
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        color: '#000000',
+                        connectorColor: '#000000',
+                        formatter: function() {
+                            return '<b>'+ this.point.name +'</b>';
+                            // : '+ this.percentage +' %'
+                        }
+                    }
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: 'Learning Progress',
+                data: [
+                    ['Read',   model.readTopics],
+                    ['Unread', model.overallTopics - model.readTopics]
+                ]
+            }]
+        });
+	};
+}
+
+/**
+ * Datamodel of Kurskoffer
+ * 
+ * it is able to store and load some data from and to local storage
+ * 
+ * @param u
+ * @param p
+ * @param t
+ * @returns
+ */
+function KofferModel(u, p, t, course) {
+	
+	/** Just a static name for the model */
+	this.kofferName = 'Kurskoffer';
+	
+	/** User Information */
+	this.username = jQuery.trim(u);
+	this.password = jQuery.trim(p);
+	this.token = jQuery.trim(t);
+	this.course = course;
+	
+	/** JSON based data model */
+	this.jsonModel = null;
+	
+	/** parsed model -> we did this way too often in the code */
+	this.parsedModel = null;
+	
+	/** If not null we call this function when we got new json data */
+	this.renderingListener = null;
+	
+	/** Create a progress model */
+	this.progressModel = new ProgressModel(this.username);
+	
+	/** Print basic information about this model to console */
+	this.logInfo = function() {
+		console.log('kofferName: ' + this.kofferName);
+	};
+	
+	/** Store login data to local storage */
+	this.store = function() {
+		console.log('store to local storage');
+		localStorage.setItem('username', this.username);
+		localStorage.setItem('password', this.password);
+		localStorage.setItem('token', this.token);
+		localStorage.setItem('course', this.course);
+	};
+	
+	/** Check wether we are handling a string 'null' */
+	this._checkNullString = function(value) {
+		if(value == 'null') {
+			return null;
+		}
+		return value;
+	};
+	
+	/**
+	 * Read login data from local storage
+	 * Does not read token, since this needs to be retrieved from moodle again
+	 *  */
+	this.load = function() {
+		console.log('read from local storage');
+		this.username = this._checkNullString(localStorage.getItem('username'));
+		this.password = this._checkNullString(localStorage.getItem('password'));
+		this.course = this._checkNullString(localStorage.getItem('course'));
+	};
+	
+	/**
+	 * Reset the model to logout user
+	 */
+	this.logout = function() {
+		// reseting data
+		this.username = null;
+		this.password = null;
+		this.token = null;
+		this.course = null;
+		// store null values to localstorage
+		this.store();
+	};
+	
+	/**
+	 * Return users name
+	 */
+	this.getUserName = function() {
+		return this.username;
+	};
+	
+	/**
+	 * Return password
+	 */
+	this.getPassword = function() {
+		return this.password;
+	};
+	
+	/**
+	 * Return authentication token
+	 */
+	this.getToken = function() {
+		return this.token;
+	};
+	
+	/**
+	 * Return the selected course
+	 */
+	this.getCourse = function() {
+		return this.course;
+	};
+	
+	/**
+	 * Check if credentials are set (were loaded form local storage)
+	 */
+	this.hasCredentials = function() {
+		return this.username != null;
+	};
+	
+	/**
+	 * Private Method that performs a file system request
+	 * writing may be true or false to indicate if the model is written or read
+	 * we need to pass the model (object/this) that gets loaded or stored
+	 */
+	this._requestFileSystem = function(writing, model) {
+		console.log('requesting access to local filesystem');
+		window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(filesystem) {
+			console.log('file system access was granted');
+			model._requestFile(filesystem, 'course.oerk', writing, model);
+		}, function(err) {
+			console.log('file system access was denied with error ' + err.code);
+			navigator.notification.alert('Your system does not support file system access we cannot operate in offline mode!', function() {});
+		});
+	};
+	
+	/**
+	 * Private Method that performs the details of file handling
+	 */
+	this._requestFile = function(filesystem, filename, writing, model) {
+		console.log('requesting access to ' + filename + ' for ' + (writing ? 'writing' : 'reading'));
+		filesystem.root.getFile(filename, {create:true, exclusive:false}, function(file) {
+			console.log('access to ' + filename + ' was granted');
+			if(!writing) {
+				file.file(function(file) {
+					var reader = new FileReader();
+					reader.onloadend = function(evt) {
+						model.setJsonModel(evt.target.result);
+						console.log('file was read and set as model.jsonModel');
+					};
+					reader.readAsText(file);
+				}, function() {
+					console.log('error on reading file - perhaps not existent or empty');
+					// it is only null on a freshly constructed object
+					if(model.jsonModel == null) {
+						model.loadJsonModelFromService();
+					}
+				});
+			}else{
+				file.createWriter(function(writer) {
+					writer.write(model.jsonModel);
+				}, function() {
+					console.log('error on writing file - we do not report this to the user');
+				});
+			}
+		}, function() {
+			console.log('access to ' + filename + ' was denied');
+			navigator.notification.alert('Your system does not support file system access we cannot operate in offline mode!', function() {});
+		});
+	};
+
+	/** Check whether a model was correctly loaded from local storage or from the webservice */
+	this.isModelLoaded = function() {
+		return this.jsonModel != null;
+	};
+	
+	/** Loads the Json from local file */
+	this.loadJsonModel = function() {
+		this._requestFileSystem(false, this);
+	};
+	
+	/** Stores the model to the filesystem */
+	this.storeJsonModel = function() {
+		this._requestFileSystem(true, this);
+	};
+	
+	/** Private Method worker for: Load the Json Model from remote service */
+	this._loadJsonModelFromService = function(model) {
+		if(this.token != '') {
+			$.post(KURSKOFFER_URL + "transform.php", { token:this.token }, function(data) {
+				if(data!='') {
+					// set to model for application
+					// TODO should we check here if we got correct JSON code?
+					model.setJsonModel(data);
+					// if listener is not null call it to render
+					if(model.renderingListener != null) {
+						model.renderingListener(model.getModel());
+						model.renderingListener = null;
+					}
+					// write to local file
+					model.storeJsonModel();
+				} else {
+					navigator.notification.alert("Error: server response is emty", function() {});
+				}
+			}, "json");
+		}else{
+			console.log('Error no token was set');
+			navigator.notification.alert("Error: Cannot access Moodle no user token was set", function() {});
+		}
+	};
+	
+	/** Allows to set a rendering listener */
+	this.setRenderingListener = function(listener) {
+		this.renderingListener = listener;
+	};
+	
+	/** Load the Json Model from remote service */
+	this.loadJsonModelFromService = function() {
+		this._loadJsonModelFromService(this);
+	};
+	
+	/** Return the currently loaded JSON model */
+	this.getJsonModel = function() {
+		return this.jsonModel;
+	};
+	
+	/** Set a new json model retrieved from local Storage or from the moodle service */
+	this.setJsonModel = function(json) {
+		this.jsonModel = json;
+		this.parsedModel = null;
+	};
+	
+	/** Get the parsed model for rendering or access, parsing is peformed on demand if neccessary */
+	this.getModel = function() {
+		if(!this.isModelLoaded()) {
+			return undefined;
+		}else{
+			if(this.parsedModel == null) {
+				this.parsedModel = JSON.parse(this.getJsonModel());
+			}
+			return this.parsedModel;
+		}
+	};
+	
+	/** Returns the initialized progress model */
+	this.getProgress = function() {
+		return this.progressModel;
+	};
+}
+
+var kofferModel = null;
+
 /*
  * KursKoffer Code Procedure
  * Below list of functions are main part of the app
@@ -165,6 +523,24 @@ function onDeviceReady() {
 	navigator.splashscreen.hide();
     // register the event listener
 	document.addEventListener("backbutton", onBackKeyDown, false);
+	kofferModel = new KofferModel(null, null, null, null);
+	kofferModel.load();
+	if(kofferModel.hasCredentials()) {
+		// if credentials were loaded from local storage put the to form
+		var form = $('#paramedicLogin');
+        $('#username', form).val(kofferModel.getUserName());
+        $('#password', form).val(kofferModel.getPassword());
+        if(kofferModel.getCourse() != null) {
+        	// if a course is saved in local storage just move to the correct login page
+        	form = $('#courseForm');
+        	$('#coursetype, form').val(kofferModel.getCourse());
+        	moveToCourse();
+        }
+	}else{
+		var form = $('#paramedicLogin');
+		$('#username', form).val('');
+		$('#password', form).val('');
+	}
 }
 
 /* Moving to the appropriate course chosen by user */
@@ -181,14 +557,18 @@ function moveToCourse() {
 }
 
 function handleLoginSuccess(user, password, token) {
+	var form = $('#courseForm');
+	var course = $('#coursetype', form).val();
+	kofferModel = new KofferModel(user, password, token, course);
+	kofferModel.logInfo();
+	kofferModel.store();
+	kofferModel.loadJsonModel();
+	kofferModel.getProgress().getProgress();
 	//store user data (uname, passwd and token)
 	console.log('login for ' + user + ' ok .. updating gui');
-	localStorage.setItem("username", ""  +user + "");
-	localStorage.setItem("password", "" + password + "");
-	localStorage.setItem("token", ""+ token +"");
 	$.mobile.changePage("index.html#homePage1", {transition: "slide"});
 	//display user's name in welcome page
-	$('.userName').html(localStorage.getItem('username'));
+	$('.userName').html(kofferModel.getUserName());
 }
 
 /* Checking the user-entered parameters */
@@ -223,13 +603,13 @@ function handleLogin() {
                 console.log(errorThrown);
             }
         });
-		console.log(result);
-		console.log(result.responseText);
-		if(result && json && result.responseText != undefined) {
-			var json = jQuery.parseJSON(result.responseText);
-			console.log('returned result');
-			handleLoginSuccess(u, p, json);
-		}
+//		console.log(result);
+//		console.log(result.responseText);
+//		if(result && json && result.responseText != undefined) {
+//			var json = jQuery.parseJSON(result.responseText);
+//			console.log('returned result');
+//			handleLoginSuccess(u, p, json);
+//		}
 	} else {
 		navigator.notification.alert("Geben Sie Ihren Benutzername und Passwort ein", function() {});
 		$("#submit1Btn").removeAttr("disabled");
@@ -238,6 +618,7 @@ function handleLogin() {
 }
 
 /* PRE_Authentication check for Username and Password */
+// TODO never called?
 function checkPreAuth() {
 	console.log('checkPreAuth');
     var form = $('#paramedicLogin');
@@ -265,39 +646,51 @@ function doSync() {
 	}
 }
 
+/**
+ * Renders a data object to the course list panel
+ */
+function renderCourseList(myData) {
+	// TODO remove? caused an error which basically halted further JS execution
+//	var dContent = function(event) {
+//	    $c_content.html($(this).data('content'));
+//	}
+	
+	var courseList = $('#courseList');
+	var html = '';
+	var chapterList = [];
+	
+	// TODO remove? see above
+//	courseList.on('click', 'div', dContent);
+	
+	var first = true;
+	$.each(myData, function(index, item) {
+	    if ($.inArray(item.chapter, chapterList) === -1) {
+	        chapterList.push(item.chapter);
+	        if(!first) { html += '</div>'; }
+	        html += '<div data-role="collapsible"><h3>' + item.chapter + '</h3>';
+	        first = false;
+	    }
+	    html += '<p><a href="#singleContent" onclick="sTopic(\'' + item.chapter + '\', \'' + item.title + '\')">' + item.title + '</a></p>';
+	});
+	if(!first) { html += '</div>'; }
+	courseList.html(html);
+}
+
 /* Course: MenuButton procedure */
 var action = '', jsonString = '';
 function courseList() {
-	//'read action' from file
-	action = 'r'; readWriteFile();
-	//filled 'myData' variable with contents
-	var myData = JSON.parse(jsonString);
-	
-	if (myData != '' || myData != undefined) {
-		var dContent = function(event) {
-		    $c_content.html($(this).data('content'));
-		}
-		
-		var $c_list = $('#courseList');
-		var html = '';
-		var chapterList = [];
-		
-		$c_list.on('click', 'div', dContent);
-		
-		var first = true;
-		$.each(myData, function(index, item) {
-		    if ($.inArray(item.chapter, chapterList) === -1) {
-		        chapterList.push(item.chapter);
-		        if(!first) { html += '</div>'; }
-		        html += '<div data-role="collapsible"><h3>' + item.chapter + '</h3>';
-		        first = false;
-		    }
-		    html += '<p><a href="#singleContent" onclick="sTopic(\'' + item.chapter + '\', \'' + item.title + '\')">' + item.title + '</a></p>';
-		});
-		if(!first) { html += '</div>'; }
-		$c_list.html(html);
-	} else {
-		$('#cList').html('<div align="center">Der Kurs ist leer, bitte aktualisieren</div>');
+	if(kofferModel.isModelLoaded()) {
+		console.log('found locally cached moodle data .. trying to parse');
+		var myData = kofferModel.getModel();
+		console.log('found locally cached moodle data .. successfully parsed');
+		// show the loaded data
+		renderCourseList(myData);
+	}else{
+		// data is not ready, just register the render method and request an update
+		// it is not very likely that this case occurs?
+		$('#cList').html('<div align="center">Daten werden abgerufen</div>');
+		kofferModel.setRenderingListener(renderCourseList);
+		kofferModel.loadJsonModelFromService();
 	}
 }
 
@@ -305,9 +698,11 @@ function courseList() {
 var keyword = '';
 function sTopic(chapter, title) {
 	//'read action' from file
-	action = 'r'; readWriteFile();
+	// TODO reading not necessary since the model is actually stored in kofferModel
+//	action = 'r'; readWriteFile();
 	//filled 'myData' variable with contents
-	var myData2 = JSON.parse(jsonString);
+//	var myData2 = JSON.parse(jsonString);
+	var myData2 = kofferModel.getModel();
 	
 	for (var i = 0; i < myData2.length; i++) {
 	    if (myData2[i].chapter == chapter && myData2[i].title == title) {
@@ -315,12 +710,16 @@ function sTopic(chapter, title) {
 	    	$('#cContent').html(myData2[i].content);
 	    }
 	}
+	
+	kofferModel.getProgress().trackAccess(title);
+	
 	//gettig keyword of the clicked topic
 	keyword = document.getElementById('kword').value;
 	console.log('sTopic(): Got a keyword - ' +keyword);
 }
 
 /* Get CourseList from the Moodle */
+// TODO defined but never called
 var jsonData = '';
 function getCourseList() {
 	var usertkn = localStorage.getItem("token");
@@ -375,7 +774,7 @@ function gotFileWriter(writer) {
 	};
 	writer.write(jsonData);
 	//REcall `courseList()` to display refreshed course-data from Moodle
-	courseList();
+	//courseList();
 }
 function onFSError(err) {
 	console.log(err.code);
@@ -447,6 +846,7 @@ function onBackKeyDown() {
 	}
 }
 function doLogout() {
+	kofferModel.logout();
 	history.go(-(history.length - 1));
 	window.location.replace("index.html");
 }
