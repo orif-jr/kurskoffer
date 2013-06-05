@@ -372,10 +372,27 @@ function Course(id, title, language, img, css) {
 	this.hideExternalApplication = false;
 	this.hideSocialNetworking = false;
 	
+	this.imgCourses = null;
+	this.imgSchedule = null;
+	this.imgTasks = null;
+	this.imgProgress = null;
+	this.imgExternalApplication = null;
+	this.imgSocialNetworking = null;
+	
 	/** get the id */
 	this.getId = function () {
 		return this.id;
 	}
+	
+	/** sets a new icon set */
+	this.setIconSet = function(c, s, t, p, e, n) {
+		this.imgCourses = c;
+		this.imgSchedule = s;
+		this.imgTasks = t;
+		this.imgProgress = p;
+		this.imgExternalApplication = e;
+		this.imgSocialNetworking = n;
+	};
 }
 
 /**
@@ -390,11 +407,25 @@ function CourseModel(courseId) {
 	case 1:
 		// Rettungssanitäter
 		this.course = new Course(1, "Rettungssanit&auml;ter", "de", "img/oerk_ooe.png", "b");
+		this.course.setIconSet(
+			'img/courses.png', 
+			'img/schedules.png',
+			'img/tasks.png',
+			'img/progress.png',
+			'img/firstaid.png',
+			'img/social.png');
 		break;
 	case 3:
 		// Armenian History
 		this.course = new Course(3, "Armenian History", "en", "img/coin_tigranes.png", "d");
 		this.course.hideExternalApplication = true;
+		this.course.setIconSet(
+			'img/courses3.png', 
+			'img/schedules3.png',
+			'img/tasks3.png',
+			'img/progress3.png',
+			'img/firstaid.png', // wrong but hidden anyway
+			'img/social3.png');
 		break;
 	default:
 		console.log('error we did not initalize the course properly');
@@ -420,6 +451,11 @@ function CourseModel(courseId) {
 		}
 	};
 	
+	/** Set a new image url */
+	this._applyImageHelper = function(element, img) {
+		element.attr('src', img);
+	};
+	
 	/** Applies layout at appropriate places */
 	this.applyLayout = function() {
 		var layoutModel = this;
@@ -432,12 +468,20 @@ function CourseModel(courseId) {
 		jQuery.each($.find('[data-theme]'), function(index, value) {
 			jQuery(value).attr('data-theme', layoutModel.course.css);
 		});
+		// show hide courses
 		this._hideShowHelper($('#menuCourses'), layoutModel.course.hideCourses);
 		this._hideShowHelper($('#menuSchedule'), layoutModel.course.hideSchedule);
 		this._hideShowHelper($('#menuTasks'), layoutModel.course.hideTasks);
 		this._hideShowHelper($('#menuProgress'), layoutModel.course.hideProgress);
 		this._hideShowHelper($('#menuExternalApp'), layoutModel.course.hideExternalApplication);
 		this._hideShowHelper($('#menuSocial'), layoutModel.course.hideSocialNetworking);
+		// set correct images
+		this._applyImageHelper($('#menuCourses'), layoutModel.course.imgCourses);
+		this._applyImageHelper($('#menuSchedule'), layoutModel.course.imgSchedule);
+		this._applyImageHelper($('#menuTasks'), layoutModel.course.imgTasks);
+		this._applyImageHelper($('#menuProgress'), layoutModel.course.imgProgress);
+		this._applyImageHelper($('#menuExternalApp'), layoutModel.course.imgExternalApplication);
+		this._applyImageHelper($('#menuSocial'), layoutModel.course.imgSocialNetworking);
 	};
 }
 
