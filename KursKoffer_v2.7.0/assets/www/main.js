@@ -169,6 +169,15 @@ function ProgressModel(user) {
 	/** overall topic count */
 	this.overallTopics = null;
 	
+	/** how many have a better score */
+	this.countHigher = null;
+	
+	/** how many have lower score */
+	this.countLower = null;
+	
+	/** how many have the same score */
+	this.countSame = null;
+	
 	/** call this whenever a topic is touched */
 	this.trackAccess = function(chapter) {
 		var model = this;
@@ -188,6 +197,9 @@ function ProgressModel(user) {
 				// the database query retrieves this as string
 				model.readTopics = parseFloat(result.readTopics);
 				model.overallTopics = result.topicCount;
+				model.countHigher = result.countHigher;
+				model.countLower = result.countLower;
+				model.countSame = result.countSame;
 				console.log('readTopics ' + model.readTopics + ' overallTopics ' + model.overallTopics);
 				model._renderProgress();
 			}else{
@@ -199,8 +211,8 @@ function ProgressModel(user) {
 	/** render Progress to progress bar */
 	this._renderProgress = function() {
 		console.log('rendering progress to ui ' + this.readTopics);
-		$('#progressReadTopics').html('You have read ' + this.readTopics + ' topics');
-		$('#progressOverallTopics').html('out of ' + this.overallTopics + ' available topics');
+		$('#progressReadTopics').html('You have read ' + this.readTopics + ' topics out of ' + this.overallTopics + ' available topics');
+		$('#progressOverallTopics').html('You are doing better than ' + this.countLower + ' other users. You are on the same score with ' + this.countSame + ' other users and ' + this.countHigher + ' users have a better score than you');
 	};
 	
 	/** Get Progress from service backend */
