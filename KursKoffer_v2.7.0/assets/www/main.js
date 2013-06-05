@@ -277,7 +277,7 @@ function ProgressModel(user) {
  * @param t
  * @returns
  */
-function KofferModel(u, p, t) {
+function KofferModel(u, p, t, course) {
 	
 	/** Just a static name for the model */
 	this.kofferName = 'Kurskoffer';
@@ -286,6 +286,7 @@ function KofferModel(u, p, t) {
 	this.username = jQuery.trim(u);
 	this.password = jQuery.trim(p);
 	this.token = jQuery.trim(t);
+	this.course = course;
 	
 	/** JSON based data model */
 	this.jsonModel = null;
@@ -310,6 +311,15 @@ function KofferModel(u, p, t) {
 		localStorage.setItem('username', this.username);
 		localStorage.setItem('password', this.password);
 		localStorage.setItem('token', this.token);
+		localStorage.setItem('course', this.course);
+	};
+	
+	/** Check wether we are handling a string 'null' */
+	this._checkNullString = function(value) {
+		if(value == 'null') {
+			return null;
+		}
+		return value;
 	};
 	
 	/**
@@ -318,8 +328,22 @@ function KofferModel(u, p, t) {
 	 *  */
 	this.load = function() {
 		console.log('read from local storage');
-		this.username = localStorage.getItem('username');
-		this.password = localStorage.getItem('password');
+		this.username = this._checkNullString(localStorage.getItem('username'));
+		this.password = this._checkNullString(localStorage.getItem('password'));
+		this.course = this._checkNullString(localStorage.getItem('course'));
+	};
+	
+	/**
+	 * Reset the model to logout user
+	 */
+	this.logout = function() {
+		// reseting data
+		this.username = null;
+		this.password = null;
+		this.token = null;
+		this.course = null;
+		// store null values to localstorage
+		this.store();
 	};
 	
 	/**
@@ -344,10 +368,17 @@ function KofferModel(u, p, t) {
 	};
 	
 	/**
+	 * Return the selected course
+	 */
+	this.getCourse = function() {
+		return this.course;
+	};
+	
+	/**
 	 * Check if credentials are set (were loaded form local storage)
 	 */
 	this.hasCredentials = function() {
-		return this.username != null && this.password != null;
+		return this.username != null;
 	};
 	
 	/**
@@ -492,13 +523,23 @@ function onDeviceReady() {
 	navigator.splashscreen.hide();
     // register the event listener
 	document.addEventListener("backbutton", onBackKeyDown, false);
-	kofferModel = new KofferModel(null, null, null);
+	kofferModel = new KofferModel(null, null, null, null);
 	kofferModel.load();
 	if(kofferModel.hasCredentials()) {
 		// if credentials were loaded from local storage put the to form
 		var form = $('#paramedicLogin');
         $('#username', form).val(kofferModel.getUserName());
         $('#password', form).val(kofferModel.getPassword());
+        if(kofferModel.getCourse() != null) {
+        	// if a course is saved in local storage just move to the correct login page
+        	form = $('#courseForm');
+        	$('#coursetype, form').val(kofferModel.getCourse());
+        	moveToCourse();
+        }
+	}else{
+		var form = $('#paramedicLogin');
+		$('#username', form).val('');
+		$('#password', form).val('');
 	}
 }
 
@@ -516,7 +557,9 @@ function moveToCourse() {
 }
 
 function handleLoginSuccess(user, password, token) {
-	kofferModel = new KofferModel(user, password, token);
+	var form = $('#courseForm');
+	var course = $('#coursetype', form).val();
+	kofferModel = new KofferModel(user, password, token, course);
 	kofferModel.logInfo();
 	kofferModel.store();
 	kofferModel.loadJsonModel();
@@ -803,6 +846,7 @@ function onBackKeyDown() {
 	}
 }
 function doLogout() {
+	kofferModel.logout();
 	history.go(-(history.length - 1));
 	window.location.replace("index.html");
 }
