@@ -867,7 +867,7 @@ function gotFileWriter(writer) {
 	};
 	writer.write(jsonData);
 	//REcall `courseList()` to display refreshed course-data from Moodle
-	courseList();
+	//courseList();
 }
 function onFSError(err) {
 	console.log(err.code);
