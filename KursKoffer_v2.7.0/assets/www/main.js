@@ -5,7 +5,6 @@
 
 var LOCAL = false;
 var KURSKOFFER_URL = "http://cloud.c3lab.tk.jku.at/kurskoffer/";
-var SYSEM_LANGUAGE = 'en';
 
 if(LOCAL) {
 	// adjust some settings if we are running in local mode
@@ -351,6 +350,74 @@ function WikipediaModel(parentModel) {
 }
 
 /**
+ * Model of a single course
+ * 
+ * @param title
+ * @param language
+ * @param img
+ * @param css
+ */
+function Course(id, title, language, img, css) {
+	this.id = id;
+	this.title = title;
+	this.language = language;
+	this.img = img;
+	this.css = css;
+	
+	/** get the id */
+	this.getId = function () {
+		return this.id;
+	}
+}
+
+/**
+ * Handles details of the course
+ * 
+ * @param courseId
+ */
+function CourseModel(courseId) {
+	this.course = null;
+	courseId = parseInt(courseId);
+	switch (courseId) {
+	case 1:
+		// Rettungssanitäter
+		this.course = new Course(1, "Rettungssanit&auml;ter", "de", "img/oerk_ooe.png", "b");
+		break;
+	case 3:
+		// Armenian History
+		this.course = new Course(3, "Armenian History", "en", "img/coin_tigranes.png", "d");
+		break;
+	default:
+		console.log('error we did not initalize the course properly');
+		break;
+	}
+	
+	/** Get course model */
+	this.getModel = function() {
+		return this.course;
+	};
+	
+	/** Return the encapsulated models id */
+	this.getId = function() {
+		return this.getModel().getId();
+	};
+	
+	/** Applies layout at appropriate places */
+	this.applyLayout = function() {
+		var layoutModel = this;
+		console.log('applying layout for ' + this.course.title);
+		// set title
+		$('#loginTitle').html(layoutModel.course.title);
+		// set image
+		$('#loginImg').attr('src', layoutModel.course.img);
+		// set css
+		jQuery.each($.find('[data-theme]'), function(index, value) {
+			jQuery(value).attr('data-theme', layoutModel.course.css);
+		});
+	};
+}
+
+/**
  * Datamodel of Kurskoffer
  * 
  * it is able to store and load some data from and to local storage
@@ -369,7 +436,6 @@ function KofferModel(u, p, t, course) {
 	this.username = jQuery.trim(u);
 	this.password = jQuery.trim(p);
 	this.token = jQuery.trim(t);
-	this.course = course;
 	
 	/** JSON based data model */
 	this.jsonModel = null;
@@ -386,6 +452,13 @@ function KofferModel(u, p, t, course) {
 	/** Create wikipedia model */
 	this.wikipediaModel = new WikipediaModel(this);
 	
+	/** create a course model if appropriate */
+	if(course != null) {
+		this.courseModel = new CourseModel(course);
+	}else{
+		this.courseModel = null; 
+	}
+	
 	/** Print basic information about this model to console */
 	this.logInfo = function() {
 		console.log('kofferName: ' + this.kofferName);
@@ -397,7 +470,11 @@ function KofferModel(u, p, t, course) {
 		localStorage.setItem('username', this.username);
 		localStorage.setItem('password', this.password);
 		localStorage.setItem('token', this.token);
-		localStorage.setItem('course', this.course);
+		if(this.courseModel != null && this.courseModel != undefined) {
+			localStorage.setItem('course', this.courseModel.getId());
+		}else{
+			localStorage.setItem('course', null);
+		}
 	};
 	
 	/** Check wether we are handling a string 'null' */
@@ -416,7 +493,10 @@ function KofferModel(u, p, t, course) {
 		console.log('read from local storage');
 		this.username = this._checkNullString(localStorage.getItem('username'));
 		this.password = this._checkNullString(localStorage.getItem('password'));
-		this.course = this._checkNullString(localStorage.getItem('course'));
+		var course = this._checkNullString(localStorage.getItem('course'));
+		if(course != null) {
+			this.courseModel = new CourseModel(course);
+		}
 	};
 	
 	/**
@@ -427,7 +507,7 @@ function KofferModel(u, p, t, course) {
 		this.username = null;
 		this.password = null;
 		this.token = null;
-		this.course = null;
+		this.courseModel = null;
 		// store null values to localstorage
 		this.store();
 	};
@@ -457,7 +537,7 @@ function KofferModel(u, p, t, course) {
 	 * Return the selected course
 	 */
 	this.getCourse = function() {
-		return this.course;
+		return this.courseModel;
 	};
 	
 	/**
@@ -600,6 +680,11 @@ function KofferModel(u, p, t, course) {
 	this.getWikipedia = function() {
 		return this.wikipediaModel;
 	};
+	
+	/** update the course id */
+	this.setCourse = function(id) {
+		this.courseModel = new CourseModel(id);
+	};
 }
 
 var kofferModel = null;
@@ -624,7 +709,7 @@ function onDeviceReady() {
         if(kofferModel.getCourse() != null) {
         	// if a course is saved in local storage just move to the correct login page
         	form = $('#courseForm');
-        	$('#coursetype, form').val(kofferModel.getCourse());
+        	$('#coursetype, form').val(kofferModel.getCourse().getId());
         	moveToCourse();
         }
 	}else{
@@ -638,13 +723,9 @@ function onDeviceReady() {
 function moveToCourse() {
 	var form = $('#courseForm');
 	var course = $('#coursetype', form).val();
-	if (course == '1') {
-		$.mobile.changePage("index.html#paramedicPage", {transition: "flow"});
-	} else if (course == '2') {
-		$.mobile.changePage("index.html#samariterbundPage", {transition: "flow"});
-	} else if (course == '3') {
-		$.mobile.changePage("index.html#armeniahistoryPage", {transition: "flow"});
-	}
+	kofferModel.setCourse(course);
+	kofferModel.getCourse().applyLayout();
+	$.mobile.changePage("index.html#loginPage", {transition: "flow"});
 }
 
 function handleLoginSuccess(user, password, token) {

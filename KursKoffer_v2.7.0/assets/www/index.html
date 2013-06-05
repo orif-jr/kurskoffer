@@ -22,7 +22,7 @@
     <body onload="init()">
     <!-- Start of first page -->
     	<div data-role="page" id="initialPage">
-			<div data-role="header" data-position="inline"  data-theme="a">
+			<div data-role="header" data-position="inline" data-theme="a">
 				<h1>mLaaS</h1>
 				<a data-role="none" class="dummyBtn opacity" href="#"></a>
 				<a data-role="none" class="aboutBtn opacity" data-transition="slide" href="#aboutPage"></a></div>
@@ -45,7 +45,7 @@
 		<!-- /Start of first page -->
 		
 		<!-- 1.Rettungssanitäter --> 
-    	<div data-role="page" id="paramedicPage">
+    	<div data-role="page" id="loginPage">
 			<div data-role="header" data-position="inline" data-theme="b">
 				<h1>Authentifikation</h1>
 				<a data-role="none" class="dummyBtn opacity" href="#"></a>
@@ -53,8 +53,8 @@
 			<div data-role="content">
 				<!-- Content -->
 				<div align="center">
-					<h1>Rettungssanitäter</h1>
-					<img height="125" src="img/oerk_ooe.png" /></div>
+					<h1><span id="loginTitle">No title set. This is an error!</span></h1>
+					<img id="loginImg" height="125" /></div>
 				<p><a data-transition="slide" href="#forgotPass">Passwort vergessen</a></p>
 				<p><a data-transition="slide" href="#helpPage">brauchen Hilfe?</a></p>
 				<form id="paramedicLogin">
