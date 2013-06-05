@@ -616,7 +616,10 @@ function KofferModel(u, p, t, course) {
 	/** Private Method worker for: Load the Json Model from remote service */
 	this._loadJsonModelFromService = function(model) {
 		if(this.token != '') {
-			$.post(KURSKOFFER_URL + "transform.php", { token:this.token }, function(data) {
+			$.post(KURSKOFFER_URL + "transform.php", {
+				token:this.token,
+				courseid:this.courseModel.getId()
+			}, function(data) {
 				if(data!='') {
 					// set to model for application
 					// TODO should we check here if we got correct JSON code?
