@@ -419,10 +419,11 @@ function CourseModel(courseId) {
 		// Armenian History
 		this.course = new Course(3, "Armenian History", "en", "img/coin_tigranes.png", "d");
 		this.course.hideExternalApplication = true;
+		this.course.hideTasks = true;
 		this.course.setIconSet(
 			'img/courses3.png', 
 			'img/schedules3.png',
-			'img/tasks3.png',
+			'img/tasks.png', // wrong but hidden anyway
 			'img/progress3.png',
 			'img/firstaid.png', // wrong but hidden anyway
 			'img/social3.png');
@@ -452,8 +453,12 @@ function CourseModel(courseId) {
 	};
 	
 	/** Set a new image url */
-	this._applyImageHelper = function(element, img) {
-		element.attr('src', img);
+	this._applyImageHelper = function(div, img) {
+		if(img != null) {
+			console.log('updating image icon ' + img);
+			var element = div.find('img');
+			element.attr('src', img);
+		}
 	};
 	
 	/** Applies layout at appropriate places */
