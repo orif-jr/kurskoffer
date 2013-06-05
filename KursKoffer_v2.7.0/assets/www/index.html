@@ -35,7 +35,7 @@
 					<select name="coursetype" id="coursetype">
 						<option value="0" selected="selected" disabled>Select here...</option>
 						<option value="1">Rettungssanitäter ÖRK</option>
-						<option value="2">Samariterbund Linz</option>
+						<!-- <option value="2">Samariterbund Linz</option> -->
 						<option value="3">History of Armenia</option>
 					</select><br /><br />
 					<button type="button" id="startBtn" data-theme="a" onclick="moveToCourse()">Start</button>
@@ -113,12 +113,27 @@
 				<h1 class="tTitle"></h1>
 				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a>
 				<a data-role="none" class="settingsBtn opacity" data-transition="slide" href="#settingsPage"></a></div>
-			<div data-role="content" id="cContent">
+			<div data-role="content">
 				<!-- Wiki-related link -->
-				<div align="right"><a id="wikiLink" href="#" onclick="wikiGenerate()"><img height="36" src="img/wiki.png" /></a></div>
+				<div id="wikiLink" align="right" style="display: none;">
+					<table>
+						<tr>
+							<td>
+								<img height="36" src="img/wiki.png" onclick="kofferModel.getWikipedia().toggleWikiInfo();" />
+							</td>
+							<td>
+								<span onclick="kofferModel.getWikipedia().toggleWikiInfo();">Additional Information on Wikipedia available</span>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div id="wikiContent" style="display: none; background-color: #ffffff;">
+					No additional information found on Wikipedia
+				</div>
 				<!-- Wiki-generated content here (if available) -->
-				
-				<!-- Single Course Topic here -->
+				<div id="cContent">
+					<!-- Single Course Topic here -->
+				</div>
 			</div>
 		</div><!-- / 1.SingleContent page -->
 		
@@ -172,176 +187,6 @@
 		
 		<!-- / 1.Rettungssanitäter -->
 		
-		<!-- 2.Samariterbund Linz --> 
-    	<div data-role="page" id="samariterbundPage">
-			<div data-role="header" data-position="inline" data-theme="c">
-				<h1>Authentication</h1>
-				<a data-role="none" class="dummyBtn opacity" href="#"></a>
-				<a data-role="none" class="aboutBtn opacity" data-transition="slide" href="#aboutPage"></a></div>
-			<div data-role="content">
-				<!-- Content -->
-				<div align="center">
-					<h1>Samariterbund Linz</h1>
-					<img height="125" src="img/asboe.png" /></div>
-				<p><a data-transition="slide" href="#forgotPass">Forgot password?</a></p>
-				<p><a data-transition="slide" href="#helpPage">Need a help?</a></p>
-				<form id="samariterLogin">
-					<div data-role="fieldcontain" class="ui-hide-label">
-						<input type="text" name="username2" id="username2" value="" placeholder="Username" /></div>
-					<div data-role="fieldcontain" class="ui-hide-label">
-						<input type="password" name="password2" id="password2" value="" placeholder="Password" /></div>
-					<input type="submit" value="Login" id="submitBtn2" />
-				</form><!-- /Content -->
-			</div>
-		</div>
-		<!-- / 2.Samariterbund Linz -->
-		
-		<!-- 3.History of Armenia --> 
-    	<div data-role="page" id="armeniahistoryPage">
-			<div data-role="header" data-position="inline" data-theme="d">
-				<h1>Authentication</h1>
-				<a data-role="none" class="dummyBtn opacity" href="#"></a>
-				<a data-role="none" class="aboutBtn opacity" data-transition="slide" href="#aboutPage"></a></div>
-			<div data-role="content">
-				<!-- Content -->
-				<div align="center">
-					<h1>History of Armenia</h1>
-					<img height="125" src="img/coin_tigranes.png" /></div>
-				<p><a data-transition="slide" href="#forgotPass">Forgot password?</a></p>
-				<p><a data-transition="slide" href="#helpPage">Need a help?</a></p>
-				<form id="armeniaLogin">
-					<div data-role="fieldcontain" class="ui-hide-label">
-						<input type="text" name="username3" id="username3" value="" placeholder="Username" /></div>
-					<div data-role="fieldcontain" class="ui-hide-label">
-						<input type="password" name="password3" id="password3" value="" placeholder="Password" /></div>
-					<input type="submit" value="Login" id="submitBtn3" />
-				</form><!-- /Content -->
-			</div>
-		</div>
-		
-		<!-- 3.Main page -->
-		<div data-role="page" id="homePage3">
-			<div data-role="header" data-position="inline" data-theme="d">
-				<h1>Main menu</h1>
-				<a data-role="none" data-transition="flip" class="logoutBtn opacity" href="#" onclick="doLogout();return false;"></a>
-				<a data-role="none" data-transition="slide" class="settingsBtn opacity" href="#settingsPage3" onclick="loadSettings()"></a></div>
-			<div data-role="content">
-				<p>Welcome to the learning system <b class="userName"></b></p><br />
-				<!-- GridView -->
-				<div id="gridview" class="ui-grid-a" align="center">
-					<div class="ui-block-a">
-						<a data-role="none" data-transition="slide" href="#coursesPage3" onclick="courseList3()"><img class="opacity" src="img/courses3.png" /></a></div>
-					<div class="ui-block-b">
-						<a data-role="none" data-transition="slide" href="#schedulePage" onclick="doSync();"><img class="opacity" src="img/schedules.png" /></a></div>
-					<div class="ui-block-a">
-						<a data-role="none" data-transition="slide" href="#tasksPage"><img class="opacity" src="img/tasks.png" /></a></div>
-					<div class="ui-block-b">
-						<a data-role="none" data-transition="slide" href="#progressPage" onclick="kofferModel.getProgress().updateCharts();"><img class="opacity" src="img/progress.png" /></a></div>
-					<div class="ui-block-a">
-						<a data-role="none" data-transition="slide" href="#" onclick="firstAid()"><img class="opacity" src="img/firstaid.png" /></a></div>
-					<div class="ui-block-b">
-						<a data-role="none" data-transition="slide" href="#socialPage3"><img class="opacity" src="img/social3.png" /></a></div>
-				</div><!-- /GridView -->
-            </div>
-		</div><!-- / 3.Main page -->
-		
-		<!-- 3.Courses page -->
-		<div data-role="page" id="coursesPage3">
-			<div data-role="header" data-position="inline" data-theme="d">
-				<h1>Courses</h1>
-				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a>
-				<a data-role="none" class="refreshBtn opacity" data-transition="slide" href="#" onclick="kofferModel.loadJsonModelFromService();return false;"></a></div>
-			<div data-role="content" id="cList">
-				<!-- collapsible sets (accordion) -->
-				<div data-role="collapsible-set" id="courseList" data-mini="true" data-collapsed-icon="arrow-r" data-expanded-icon="arrow-d" data-inset="false">
-					<!-- Topiclist aquired from the course.oerk -->
-				</div><!-- /Course print into accordion JS -->
-			</div>
-		</div><!-- / 3.Courses page -->
-		
-		<!-- SingleContent page -->
-		<div data-role="page" id="singleContent">
-			<div data-role="header" data-position="inline" data-theme="b">
-				<h1 class="tTitle"></h1>
-				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a>
-				<a data-role="none" class="settingsBtn opacity" data-transition="slide" href="#settingsPage"></a></div>
-			<div data-role="content">
-				<!-- Wiki-related link -->
-				<div id="wikiLink" align="right" style="display: none;">
-					<table>
-						<tr>
-							<td>
-								<img height="36" src="img/wiki.png" onclick="kofferModel.getWikipedia().toggleWikiInfo();" />
-							</td>
-							<td>
-								<span onclick="kofferModel.getWikipedia().toggleWikiInfo();">Additional Information on Wikipedia available</span>
-							</td>
-						</tr>
-					</table>
-				</div>
-				<div id="wikiContent" style="display: none;">
-					No additional information found on Wikipedia
-				</div>
-				<!-- Wiki-generated content here (if available) -->
-				<div id="cContent">
-					<!-- Single Course Topic here -->
-				</div>
-			</div>
-		</div>
-		<!-- /SigleContent page -->
-		
-		<!-- Schedules page -->
-		<div data-role="page" id="schedulePage">
-			<div data-role="header" data-position="inline" data-theme="b">
-				<h1>Termine</h1>
-				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a>
-				<a data-role="none" class="settingsBtn opacity" data-transition="slide" href="#settingsPage"></a></div>
-			<div data-role="content" id="scheduleList">
-				<p>Under construction.</p> 
-			</div>
-		</div>
-		<!-- /Schedules page -->
-		
-		<!-- Tasks page -->
-		<div data-role="page" id="tasksPage">
-			<div data-role="header" data-position="inline" data-theme="b">
-				<h1>Aufgaben</h1>
-				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a>
-				<a data-role="none" class="settingsBtn opacity" data-transition="slide" href="#settingsPage"></a></div>
-			<div data-role="content" id="taskList">
-				<p>Under construction.</p> 
-			</div>
-		</div>
-		<!-- /Tasks page -->
-		
-		<!-- Progress page -->
-		<div data-role="page" id="progressPage">
-			<div data-role="header" data-position="inline" data-theme="b">
-				<h1>Fortschritt</h1>
-				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a>
-				<a data-role="none" class="settingsBtn opacity" data-transition="slide" href="#settingsPage"></a></div>
-			<div data-role="content" id="prgss">
-				<div id="progressReadTopics">
-					Data not loaded yet.
-				</div>
-				<div id="progressOverallTopics"></div>
-				<div id="progressChartReading" style="width: 330px;"></div>
-			</div>
-		</div>
-		<!-- /Progress page -->
-		
-		<!-- Social page -->
-		<div data-role="page" id="socialPage">
-			<div data-role="header" data-position="inline" data-theme="b">
-				<h1>Soziales Netz</h1>
-				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a>
-				<a data-role="none" class="settingsBtn opacity" data-transition="slide" href="#settingsPage"></a></div>
-			<div data-role="content" id="socium">
-				<p>Under construction.</p> 
-			</div>
-		</div>
-		<!-- /Social page -->
-		
 		<!-- Settings -->
 		<div data-role="page" id="settingsPage">
 			<div data-role="header" data-position="inline" data-theme="b">
@@ -388,53 +233,6 @@
 			</div>
 		</div>
 		<!-- /Settings -->
-		
-		<!-- 3.Settings -->
-		<div data-role="page" id="settingsPage3">
-			<div data-role="header" data-position="inline" data-theme="d">
-				<h1>Settings</h1>
-				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a></div>
-			<div data-role="content">
-				<!-- listview -->
-				<form id="settingsForm" name="settingsForm">
-					<ul data-role="listview">
-						<li>
-							<h3>Sound</h3>
-							<p>Sound while the pop-up</p>
-							<p class="ui-li-aside">
-								<select id="sound" name="sound" data-role="slider" data-mini="true"
-									onchange="if (document.getElementById('sound').value == '1') beep();">
-									<option value="0">Off</option>
-									<option value="1">On</option>
-								</select></p></li>
-						<li>
-							<h3>Vibration</h3>
-							<p>Vibration while the pop-up</p>
-							<p class="ui-li-aside">
-								<select id="vibration" name="vibration" data-role="slider" data-mini="true"
-									onchange="if (document.getElementById('vibration').value == '1') vibrate();">
-									<option value="0">Off</option>
-									<option value="1">On</option>
-								</select></p></li>
-						<li>
-							<h3>Calendar Sync</h3>
-							<p>Sync with the mobile calendar</p>
-							<p class="ui-li-aside">
-								<a data-role="none" href="#" onclick="doSync3()"><img src="css/images/ic_refresh.png" /></a></p></li>
-						<li data-icon="false">
-							<h3>Info</h3>
-							<p>Information about the Project</p>
-							<p class="ui-li-aside">
-								<a data-role="none" data-transition="slide" href="#aboutPage"><img src="css/images/ic_about.png" /></a></p></li>
-					</ul><br />
-					<div align="center">
-						<a href="javascript:history.back();" data-role="button" data-inline="true">Cancel</a>
-						<a href="javascript:history.back();" data-role="button" onclick="saveSettings()" data-inline="true">Save</a>
-					</div>
-				</form><!-- /listview -->
-			</div>
-		</div>
-		<!-- / 3.Settings -->
 		
 		<!-- Forgot Password -->
 		<div data-role="page" id="forgotPass">

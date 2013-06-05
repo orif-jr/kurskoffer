@@ -325,6 +325,12 @@ function WikipediaModel(parentModel) {
 		this._hideWikipediaElements();
 	};
 	
+	/** Hide also the link */
+	this.hideAll = function() {
+		this.hide();
+		$('#wikiLink').hide();
+	};
+	
 	/** show the wiki elements */
 	this._showWikipediaElements = function() {
 		$('#wikiLink').show();
@@ -782,20 +788,13 @@ function courseList() {
 
 /* Display 'content' JSON element related to the clicked 'title' */
 function sTopic(chapter, title) {
-	//'read action' from file
-	// TODO reading not necessary since the model is actually stored in kofferModel
-//	action = 'r'; readWriteFile();
-	//filled 'myData' variable with contents
-//	var myData2 = JSON.parse(jsonString);
 	var myData2 = kofferModel.getModel();
-	
 	for (var i = 0; i < myData2.length; i++) {
 	    if (myData2[i].chapter == chapter && myData2[i].title == title) {
 	    	$('.tTitle').html(myData2[i].title);
 	    	$('#cContent').html(myData2[i].content);
 	    }
 	}
-	
 	kofferModel.getProgress().trackAccess(title);
 	
 	var keyword = $('#kword');
@@ -804,11 +803,8 @@ function sTopic(chapter, title) {
 		kofferModel.getWikipedia().setTopic(keyword.val());
 		kofferModel.getWikipedia().checkTopic();
 	}else{
-		kofferModel.getWikipeida().hide();
+		kofferModel.getWikipedia().hideAll();
 	}
-	//gettig keyword of the clicked topic
-//	keyword = document.getElementById('kword').value;
-//	console.log('sTopic(): Got a keyword - ' +keyword);
 }
 
 /* Get CourseList from the Moodle */
