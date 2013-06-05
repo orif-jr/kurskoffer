@@ -63,7 +63,6 @@
 					<div data-role="fieldcontain" class="ui-hide-label">
 						<input type="password" name="password" id="password" value="" placeholder="Passwort" /></div>
 					<input type="submit" id="submit1Btn" value="Einloggen" onclick="handleLogin()" />
-					<a href="#homePage1">Click me</a>
 				</form><!-- /Content -->
 			</div>
 		</div>
@@ -130,7 +129,7 @@
 					<div class="ui-block-a">
 						<a data-role="none" data-transition="slide" href="#coursesPage" onclick="courseList()"><img class="opacity" src="img/courses.png" /></a></div>
 					<div class="ui-block-b">
-						<a data-role="none" data-transition="slide" href="#schedulePage"><img class="opacity" src="img/schedules.png" /></a></div>
+						<a data-role="none" data-transition="slide" href="#schedulePage" onclick="doSync();"><img class="opacity" src="img/schedules.png" /></a></div>
 					<div class="ui-block-a">
 						<a data-role="none" data-transition="slide" href="#tasksPage"><img class="opacity" src="img/tasks.png" /></a></div>
 					<div class="ui-block-b">
@@ -165,12 +164,27 @@
 				<h1 class="tTitle"></h1>
 				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a>
 				<a data-role="none" class="settingsBtn opacity" data-transition="slide" href="#settingsPage"></a></div>
-			<div data-role="content" id="cContent">
+			<div data-role="content">
 				<!-- Wiki-related link -->
-				<div align="right"><a id="wikiLink" href="#" onclick="wikiGenerate()"><img height="36" src="img/wiki.png" /></a></div>
+				<div id="wikiLink" align="right" style="display: none;">
+					<table>
+						<tr>
+							<td>
+								<img height="36" src="img/wiki.png" onclick="kofferModel.getWikipedia().toggleWikiInfo();" />
+							</td>
+							<td>
+								<span onclick="kofferModel.getWikipedia().toggleWikiInfo();">Additional Information on Wikipedia available</span>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div id="wikiContent" style="display: none;">
+					No additional information found on Wikipedia
+				</div>
 				<!-- Wiki-generated content here (if available) -->
-				
-				<!-- Single Course Topic here -->
+				<div id="cContent">
+					<!-- Single Course Topic here -->
+				</div>
 			</div>
 		</div>
 		<!-- /SigleContent page -->

@@ -5,6 +5,7 @@
 
 var LOCAL = false;
 var KURSKOFFER_URL = "http://cloud.c3lab.tk.jku.at/kurskoffer/";
+var SYSEM_LANGUAGE = 'en';
 
 if(LOCAL) {
 	// adjust some settings if we are running in local mode
@@ -160,8 +161,8 @@ function init() {
  * 
  * it stores the progress for each topic
  */
-function ProgressModel(user) {
-	this.username = user;
+function ProgressModel(parentModel) {
+	this.parentModel = parentModel;
 	
 	/** my read topic count */
 	this.readTopics = null;
@@ -181,7 +182,7 @@ function ProgressModel(user) {
 	/** call this whenever a topic is touched */
 	this.trackAccess = function(chapter) {
 		var model = this;
-		$.post(KURSKOFFER_URL + "postProgress.php", { username:this.username, chapter:chapter }, function(data) {
+		$.post(KURSKOFFER_URL + "postProgress.php", { username:this.parentModel.getUserName(), chapter:chapter }, function(data) {
 			model.getProgress();
 		});
 	};
@@ -189,7 +190,7 @@ function ProgressModel(user) {
 	/** Private method that retrieves progress from backend */
 	this._retrieveProgress = function(model) {
 		jQuery.post(KURSKOFFER_URL + 'getProgress.php', {
-			username:this.username
+			username:this.parentModel.getUserName()
 		}, function(data) {
 			data = jQuery.trim(data);
 			if(data != '') {
@@ -268,6 +269,82 @@ function ProgressModel(user) {
 }
 
 /**
+ * Class that allows us to retrieve context based information from wikipedia
+ * 
+ * @param parentModel
+ * @returns
+ */
+function WikipediaModel(parentModel) {
+	this.parentModel = parentModel;
+	
+	this.topic = null;
+	
+	this.showing = false;
+	
+	/** retrieve context based content from wikipedia */
+	this._retrieveContent = function(topic, model) {
+		console.log('finding context on wikipedia ' + topic);
+		$.getJSON('http://de.wikipedia.org/w/api.php?action=parse&page=' + topic + '&prop=text&format=json&callback=?', function(data) {
+			console.log('found content on ' + topic);
+			var wikiContent = $('#wikiContent');
+	        wikiContent.html(data.parse.text['*']);
+	        wikiContent.find("a:not(.references a)").attr("href", function(){ return "http://de.m.wikipedia.org" + $(this).attr("href"); });
+	        wikiContent.find("a").attr("target", "_blank");
+	        $('#wikiLink').show();
+	    });
+	};
+	
+	/** retrieve context */
+	this.context = function(topic) {
+		this._retrieveContent(topic, this);
+	};
+	
+	/** set new topic */
+	this.setTopic = function(topic) {
+		console.log('setting new topic ' + topic);
+		this.topic = topic;
+	};
+	
+	/** check if there is info on wikipedia */
+	this.checkTopic = function() {
+		console.log('checking if we need to retrieve additional wikipedia info');
+		if(this.topic != null && this.topic != undefined) {
+			console.log('found a topic ' + this.topic);
+			this.context(this.topic);
+		}
+	};
+	
+	/** hide the wiki elements */
+	this._hideWikipediaElements = function() {
+		$('#wikiContent').hide();
+		this.showing = false;
+	};
+	
+	/** Hide wiki integration */
+	this.hide = function() {
+		this._hideWikipediaElements();
+	};
+	
+	/** show the wiki elements */
+	this._showWikipediaElements = function() {
+		$('#wikiLink').show();
+		$('#wikiContent').show();
+		this.showing = true;
+	};
+	
+	
+	/** Show or hide the wikipedia content */
+	this.toggleWikiInfo = function() {
+		if(this.showing) {
+			this._hideWikipediaElements();
+		}else{
+			this._showWikipediaElements();
+		}
+	};
+	
+}
+
+/**
  * Datamodel of Kurskoffer
  * 
  * it is able to store and load some data from and to local storage
@@ -298,7 +375,10 @@ function KofferModel(u, p, t, course) {
 	this.renderingListener = null;
 	
 	/** Create a progress model */
-	this.progressModel = new ProgressModel(this.username);
+	this.progressModel = new ProgressModel(this);
+	
+	/** Create wikipedia model */
+	this.wikipediaModel = new WikipediaModel(this);
 	
 	/** Print basic information about this model to console */
 	this.logInfo = function() {
@@ -509,6 +589,11 @@ function KofferModel(u, p, t, course) {
 	this.getProgress = function() {
 		return this.progressModel;
 	};
+	
+	/** Returns the initialized wikipedia model */
+	this.getWikipedia = function() {
+		return this.wikipediaModel;
+	};
 }
 
 var kofferModel = null;
@@ -637,6 +722,7 @@ function doSync() {
 			if(data!='') {
 				//import the calendar data (saving)
 				// bla bla bla
+				console.log(data);
 			} else {
 				navigator.notification.alert("Sync ist fehlgeschlagen! Bitte probieren Sie noch einmal", function() {});
 			}
@@ -695,7 +781,6 @@ function courseList() {
 }
 
 /* Display 'content' JSON element related to the clicked 'title' */
-var keyword = '';
 function sTopic(chapter, title) {
 	//'read action' from file
 	// TODO reading not necessary since the model is actually stored in kofferModel
@@ -713,9 +798,17 @@ function sTopic(chapter, title) {
 	
 	kofferModel.getProgress().trackAccess(title);
 	
+	var keyword = $('#kword');
+	if(keyword) {
+		console.log('there is a keyword we need wikipedia context ' + keyword.val());
+		kofferModel.getWikipedia().setTopic(keyword.val());
+		kofferModel.getWikipedia().checkTopic();
+	}else{
+		kofferModel.getWikipeida().hide();
+	}
 	//gettig keyword of the clicked topic
-	keyword = document.getElementById('kword').value;
-	console.log('sTopic(): Got a keyword - ' +keyword);
+//	keyword = document.getElementById('kword').value;
+//	console.log('sTopic(): Got a keyword - ' +keyword);
 }
 
 /* Get CourseList from the Moodle */
@@ -780,16 +873,17 @@ function onFSError(err) {
 	console.log(err.code);
 }
 
+// TODO matthias removed calls and moved code to WikipediaModel
 function wikiGenerate() {
-	var wtopic = keyword;
-	console.log('wikiGenerate(): Got a Keyword - ' +wtopic);
-	$.getJSON('http://de.wikipedia.org/w/api.php?action=parse&page='+wtopic+'&prop=text&format=json&callback=?', function(data) {
-		// display generated content in 'id=cContent'
-        $('#cContent').html(data.parse.text['*']);
-        $('#cContent').find("a:not(.references a)").attr("href", function(){ return "http://de.m.wikipedia.org" + $(this).attr("href"); });
-        $('#cContent').find("a").attr("target", "_blank");
-    });
-    return false;
+//	var wtopic = keyword;
+//	console.log('wikiGenerate(): Got a Keyword - ' +wtopic);
+//	$.getJSON('http://de.wikipedia.org/w/api.php?action=parse&page='+wtopic+'&prop=text&format=json&callback=?', function(data) {
+//		// display generated content in 'id=cContent'
+//        $('#cContent').html(data.parse.text['*']);
+//        $('#cContent').find("a:not(.references a)").attr("href", function(){ return "http://de.m.wikipedia.org" + $(this).attr("href"); });
+//        $('#cContent').find("a").attr("target", "_blank");
+//    });
+//    return false;
 }
 
 /* FirstAid: MenuButton procedure */
