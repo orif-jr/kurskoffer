@@ -163,11 +163,45 @@ function init() {
 function ProgressModel(user) {
 	this.username = user;
 	
+	/** my read topic count */
+	this.readTopics = null;
+	
+	/** overall topic count */
+	this.overallTopics = null;
+	
 	/** call this whenever a topic is touched */
 	this.trackAccess = function(chapter) {
 		$.post(KURSKOFFER_URL + "postProgress.php", { username:this.username, chapter:chapter }, function(data) {
-			// we can ignore the feedback from the service
+			this.getProgress();
 		});
+	};
+	
+	/** Private method that retrieves progress from backend */
+	this._retrieveProgress = function() {
+		jQuery.post(KURSKOFFER_URL + 'getProgress.php', {
+			username:this.username
+		}, function(data) {
+			data = jQuery.trim(data);
+			if(data != '') {
+				var result = JSON.parse(data);
+				this.readTopics = data.readTopics;
+				this.overallTopics = data.topicCount;
+				this._renderProgress();
+			}else{
+				console.log('did not retrieve a progress');
+			}
+		});
+	};
+	
+	/** render Progress to progress bar */
+	this._renderProgress = function() {
+		$('.progressReadTopics').html(this.readTopics);
+		$('.progressOverallTopics').html(this.overallTopics);
+	};
+	
+	/** Get Progress from service backend */
+	this.getProgress = function() {
+		this._retrieveProgress();
 	};
 }
 
@@ -424,11 +458,9 @@ function handleLoginSuccess(user, password, token) {
 	kofferModel.logInfo();
 	kofferModel.store();
 	kofferModel.loadJsonModel();
+	kofferModel.getProgress().getProgress();
 	//store user data (uname, passwd and token)
 	console.log('login for ' + user + ' ok .. updating gui');
-//	localStorage.setItem("username", ""  +user + "");
-//	localStorage.setItem("password", "" + password + "");
-//	localStorage.setItem("token", ""+ token +"");
 	$.mobile.changePage("index.html#homePage1", {transition: "slide"});
 	//display user's name in welcome page
 	$('.userName').html(kofferModel.getUserName());
