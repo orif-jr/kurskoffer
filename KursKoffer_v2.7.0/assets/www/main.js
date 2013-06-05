@@ -620,6 +620,11 @@ function KofferModel(u, p, t, course) {
 		return this.username != null;
 	};
 	
+	this._generateFileName = function() {
+		// TODO what if course model is null? can this be the case? -> matthias thinks no
+		return 'modelFile_' + this.courseModel.getId() + '.json';
+	};
+	
 	/**
 	 * Private Method that performs a file system request
 	 * writing may be true or false to indicate if the model is written or read
@@ -629,7 +634,7 @@ function KofferModel(u, p, t, course) {
 		console.log('requesting access to local filesystem');
 		window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(filesystem) {
 			console.log('file system access was granted');
-			model._requestFile(filesystem, 'course.oerk', writing, model);
+			model._requestFile(filesystem, model._generateFileName(), writing, model);
 		}, function(err) {
 			console.log('file system access was denied with error ' + err.code);
 			navigator.notification.alert('Your system does not support file system access we cannot operate in offline mode!', function() {});
