@@ -364,6 +364,14 @@ function Course(id, title, language, img, css) {
 	this.img = img;
 	this.css = css;
 	
+	/** do we need to hide some buttons? */
+	this.hideCourses = false;
+	this.hideSchedule = false;
+	this.hideTasks = false;
+	this.hideProgress = false;
+	this.hideExternalApplication = false;
+	this.hideSocialNetworking = false;
+	
 	/** get the id */
 	this.getId = function () {
 		return this.id;
@@ -386,6 +394,7 @@ function CourseModel(courseId) {
 	case 3:
 		// Armenian History
 		this.course = new Course(3, "Armenian History", "en", "img/coin_tigranes.png", "d");
+		this.course.hideExternalApplication = true;
 		break;
 	default:
 		console.log('error we did not initalize the course properly');
@@ -402,6 +411,15 @@ function CourseModel(courseId) {
 		return this.getModel().getId();
 	};
 	
+	/** Private method used to hide and show elements */
+	this._hideShowHelper = function(element, hide) {
+		if(hide) {
+			element.hide();
+		}else{
+			element.show();
+		}
+	};
+	
 	/** Applies layout at appropriate places */
 	this.applyLayout = function() {
 		var layoutModel = this;
@@ -414,6 +432,12 @@ function CourseModel(courseId) {
 		jQuery.each($.find('[data-theme]'), function(index, value) {
 			jQuery(value).attr('data-theme', layoutModel.course.css);
 		});
+		this._hideShowHelper($('#menuCourses'), layoutModel.course.hideCourses);
+		this._hideShowHelper($('#menuSchedule'), layoutModel.course.hideSchedule);
+		this._hideShowHelper($('#menuTasks'), layoutModel.course.hideTasks);
+		this._hideShowHelper($('#menuProgress'), layoutModel.course.hideProgress);
+		this._hideShowHelper($('#menuExternalApp'), layoutModel.course.hideExternalApplication);
+		this._hideShowHelper($('#menuSocial'), layoutModel.course.hideSocialNetworking);
 	};
 }
 
