@@ -171,22 +171,25 @@ function ProgressModel(user) {
 	
 	/** call this whenever a topic is touched */
 	this.trackAccess = function(chapter) {
+		var model = this;
 		$.post(KURSKOFFER_URL + "postProgress.php", { username:this.username, chapter:chapter }, function(data) {
-			this.getProgress();
+			model.getProgress();
 		});
 	};
 	
 	/** Private method that retrieves progress from backend */
-	this._retrieveProgress = function() {
+	this._retrieveProgress = function(model) {
 		jQuery.post(KURSKOFFER_URL + 'getProgress.php', {
 			username:this.username
 		}, function(data) {
 			data = jQuery.trim(data);
 			if(data != '') {
 				var result = JSON.parse(data);
-				this.readTopics = data.readTopics;
-				this.overallTopics = data.topicCount;
-				this._renderProgress();
+				// the database query retrieves this as string
+				model.readTopics = parseFloat(result.readTopics);
+				model.overallTopics = result.topicCount;
+				console.log('readTopics ' + model.readTopics + ' overallTopics ' + model.overallTopics);
+				model._renderProgress();
 			}else{
 				console.log('did not retrieve a progress');
 			}
@@ -195,13 +198,60 @@ function ProgressModel(user) {
 	
 	/** render Progress to progress bar */
 	this._renderProgress = function() {
-		$('.progressReadTopics').html(this.readTopics);
-		$('.progressOverallTopics').html(this.overallTopics);
+		console.log('rendering progress to ui ' + this.readTopics);
+		$('#progressReadTopics').html('You have read ' + this.readTopics + ' topics');
+		$('#progressOverallTopics').html('out of ' + this.overallTopics + ' available topics');
 	};
 	
 	/** Get Progress from service backend */
 	this.getProgress = function() {
-		this._retrieveProgress();
+		console.log('requesting progress from backend');
+		this._retrieveProgress(this);
+	};
+	
+	/** Render the highcarts diagrams */
+	this.updateCharts = function() {
+		var model = this;
+		// clean chart
+		$('#progressChartReading').html('');
+		$('#progressChartReading').highcharts({
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false,
+                credits: {enabled: false}
+            },
+            title: {
+                text: 'Learning Progress'
+            },
+            tooltip: {
+        	    pointFormat: '{series.name}: <b>{point.percentage}%</b>',
+            	percentageDecimals: 1
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        color: '#000000',
+                        connectorColor: '#000000',
+                        formatter: function() {
+                            return '<b>'+ this.point.name +'</b>';
+                            // : '+ this.percentage +' %'
+                        }
+                    }
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: 'Learning Progress',
+                data: [
+                    ['Read',   model.readTopics],
+                    ['Unread', model.overallTopics - model.readTopics]
+                ]
+            }]
+        });
 	};
 }
 

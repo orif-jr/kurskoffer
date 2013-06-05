@@ -14,6 +14,7 @@
         
         <script type="text/javascript" charset="utf-8" src="js/jquery-1.9.1.min.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.3.0.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/highcharts.js"></script>
 		<script type="text/javascript" charset="utf-8" src="cordova-2.7.0.js"></script>
 		<script type="text/javascript" charset="utf-8" src="webintent.js"></script>
 		<script type="text/javascript" charset="utf-8" src="main.js"></script>
@@ -133,7 +134,7 @@
 					<div class="ui-block-a">
 						<a data-role="none" data-transition="slide" href="#tasksPage"><img class="opacity" src="img/tasks.png" /></a></div>
 					<div class="ui-block-b">
-						<a data-role="none" data-transition="slide" href="#progressPage"><img class="opacity" src="img/progress.png" /></a></div>
+						<a data-role="none" data-transition="slide" href="#progressPage" onclick="kofferModel.getProgress().updateCharts();"><img class="opacity" src="img/progress.png" /></a></div>
 					<div class="ui-block-a">
 						<a data-role="none" data-transition="slide" href="#" onclick="firstAid()"><img class="opacity" src="img/firstaid.png" /></a></div>
 					<div class="ui-block-b">
@@ -205,8 +206,11 @@
 				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a>
 				<a data-role="none" class="settingsBtn opacity" data-transition="slide" href="#settingsPage"></a></div>
 			<div data-role="content" id="prgss">
-				<div id="progressReadTopics"></div>
+				<div id="progressReadTopics">
+					Data not loaded yet.
+				</div>
 				<div id="progressOverallTopics"></div>
+				<div id="progressChartReading" style="width: 330px;"></div>
 			</div>
 		</div>
 		<!-- /Progress page -->
