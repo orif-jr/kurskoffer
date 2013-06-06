@@ -211,8 +211,8 @@ function ProgressModel(parentModel) {
 	/** render Progress to progress bar */
 	this._renderProgress = function() {
 		console.log('rendering progress to ui ' + this.readTopics);
-		$('#progressReadTopics').html('You have read ' + this.readTopics + ' topics out of ' + this.overallTopics + ' available topics');
-		$('#progressOverallTopics').html('You are doing better than ' + this.countLower + ' other users. You are on the same score with ' + this.countSame + ' other users and ' + this.countHigher + ' users have a better score than you');
+		$('#progressReadTopics').html(_('textYouHaveRead') + this.readTopics + _('textTopicsOutOf') + this.overallTopics + _('textAvailableTopics'));
+		$('#progressOverallTopics').html(_('textBetterThan') + this.countLower + _('textSameScore') + this.countSame + _('textScoreAnd') + this.countHigher + _('textWorseThan'));
 	};
 	
 	/** Get Progress from service backend */
@@ -234,7 +234,7 @@ function ProgressModel(parentModel) {
                 credits: {enabled: false}
             },
             title: {
-                text: 'Learning Progress'
+                text: _('textLearningProgress')
             },
             tooltip: {
         	    pointFormat: '{series.name}: <b>{point.percentage}%</b>',
@@ -528,6 +528,7 @@ function KofferModel(u, p, t, course) {
 	/** create a course model if appropriate */
 	if(course != null) {
 		this.courseModel = new CourseModel(course);
+		switchLanguage(this.courseModel.course.language);
 	}else{
 		this.courseModel = null; 
 	}
@@ -569,6 +570,7 @@ function KofferModel(u, p, t, course) {
 		var course = this._checkNullString(localStorage.getItem('course'));
 		if(course != null) {
 			this.courseModel = new CourseModel(course);
+			switchLanguage(this.courseModel.course.language);
 		}
 	};
 	
@@ -777,7 +779,7 @@ var kofferModel = null;
  */
 function onDeviceReady() {
 	console.log("Cordova is ready! Cordova is ready!");
-	navigator.splashscreen.hide();
+	getTranslator();
     // register the event listener
 	document.addEventListener("backbutton", onBackKeyDown, false);
 	kofferModel = new KofferModel(null, null, null, null);
@@ -798,6 +800,7 @@ function onDeviceReady() {
 		$('#username', form).val('');
 		$('#password', form).val('');
 	}
+	navigator.splashscreen.hide();
 }
 
 /* Moving to the appropriate course chosen by user */

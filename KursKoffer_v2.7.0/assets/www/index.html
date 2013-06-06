@@ -15,6 +15,7 @@
         <script type="text/javascript" charset="utf-8" src="js/jquery-1.9.1.min.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.3.0.min.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/highcharts.js"></script>
+		<script type="text/javascript" charset="utf-8" src="intl.js"></script>
 		<script type="text/javascript" charset="utf-8" src="cordova-2.7.0.js"></script>
 		<script type="text/javascript" charset="utf-8" src="webintent.js"></script>
 		<script type="text/javascript" charset="utf-8" src="main.js"></script>
@@ -28,15 +29,14 @@
 				<a data-role="none" class="aboutBtn opacity" data-transition="slide" href="#aboutPage"></a></div>
 			<div data-role="content" align="center">
 				<!-- Content -->
-				<h1>The Course Suitcase</h1><br />
-				<p>Select needed course to start the learning.</p><br />
+				<h1 data-i18n="appTitle">Kurs Koffer</h1><br />
+				<p data-i18n="textSelectCourse">Select a course to start your personal learning experience.</p><br />
 				<form action="#" name="courseForm" id="courseForm">
-					<label for="coursetype">List of available courses:</label>
+					<label for="coursetype" data-i18n="textAvailableCourses">Available courses:</label>
 					<select name="coursetype" id="coursetype">
-						<option value="0" selected="selected" disabled>Select here...</option>
-						<option value="1">Rettungssanitäter ÖRK</option>
-						<!-- <option value="2">Samariterbund Linz</option> -->
-						<option value="3">History of Armenia</option>
+						<option value="0" selected="selected" disabled data-i18n="optionSelect">Select here...</option>
+						<option value="1" data-i18n="optionRedCross">Paramedic Course Red Cross</option>
+						<option value="3" data-i18n="optionArmenia">History of Armenia</option>
 					</select><br /><br />
 					<button type="button" id="startBtn" data-theme="a" onclick="moveToCourse()">Start</button>
 				</form><!-- /Content -->
@@ -55,14 +55,15 @@
 				<div align="center">
 					<h1><span id="loginTitle">No title set. This is an error!</span></h1>
 					<img id="loginImg" height="125" /></div>
-				<p><a data-transition="slide" href="#forgotPass">Passwort vergessen</a></p>
-				<p><a data-transition="slide" href="#helpPage">brauchen Hilfe?</a></p>
+				<p><a data-transition="slide" href="#forgotPass" data-i18n="linkLostPassword">Passwort vergessen</a></p>
+				<p><a data-transition="slide" href="#helpPage" data-i18n="linkHelp">Sie brauchen Hilfe?</a></p>
 				<form id="paramedicLogin">
 					<div data-role="fieldcontain" class="ui-hide-label">
 						<input type="text" name="username" id="username" value="" placeholder="Benutzername" /></div>
 					<div data-role="fieldcontain" class="ui-hide-label">
 						<input type="password" name="password" id="password" value="" placeholder="Passwort" /></div>
-					<input type="submit" id="submit1Btn" value="Einloggen" onclick="handleLogin()" />
+					<button id="submit1Btn" data-i18n="btnLogin" onclick="handleLogin();">Einloggen</button>	
+					<!-- <input type="submit" id="submit1Btn" value="Einloggen" data-i18n="btnLogin" onclick="handleLogin()" /> -->
 				</form><!-- /Content -->
 			</div>
 		</div>
