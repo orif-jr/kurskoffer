@@ -21,5 +21,5 @@
 	
 	"optionSelect": "Select here...",
 	"optionRedCross": "Paramedic Course Red Cross (de)",
-	"optionArmenia": "History of Armenia"
+	"optionArmenia": "Armenian History"
 }
