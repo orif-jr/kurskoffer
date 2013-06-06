@@ -163,6 +163,11 @@ function init() {
 function ProgressModel(parentModel) {
 	this.parentModel = parentModel;
 	
+	/** Signal that the progress for this course is loaded for the first time 
+	 * We will not notify the user about new badges in the first run
+	 */
+	this.firstLoad = true;
+	
 	/** my read topic count */
 	this.readTopics = null;
 	
@@ -177,6 +182,13 @@ function ProgressModel(parentModel) {
 	
 	/** how many have the same score */
 	this.countSame = null;
+	
+	/** flags for enabled badges */
+	this.badgeStarted = false;
+	this.badgeBronze = false;
+	this.badgeSilver = false;
+	this.badgeGold = false;
+	this.badgeFinished = false;
 	
 	/** call this whenever a topic is touched */
 	this.trackAccess = function(chapter) {
@@ -206,11 +218,44 @@ function ProgressModel(parentModel) {
 				model.countLower = result.countLower;
 				model.countSame = result.countSame;
 				console.log('readTopics ' + model.readTopics + ' overallTopics ' + model.overallTopics);
+				model._updateBadges();
 				model._renderProgress();
+				// disable first run behavior
+				model.firstLoad = false;
 			}else{
 				console.log('did not retrieve a progress');
 			}
 		});
+	};
+	
+	/** Updates the state of the badges according to the current course progress */
+	this._updateBadges = function() {
+		if(this.readTopics > 0) {
+			this.badgeStarted = true;
+			if(this.countHigher < 5) {
+				this.badgeBronze = true;
+			}
+			if(this.countSame > this.countHigher) {
+				this.badgeSilver = true;
+			}
+			if(this.countHigher == 0) {
+				this.badgeGold = true;
+			}
+			if(this.readTopics == this.overallTopics) {
+				this.badgeFinished = true;
+			}
+		}
+	};
+	
+	/** Render status of a single badge */
+	this._renderBadgeStatus = function(badge, enabled) {
+		var img = $('#' + badge);
+		if(enabled) {
+			var enabledSrc = img.attr('data-enabled-src');
+			img.attr('src', enabledSrc);
+		}else{
+			img.attr('src', 'img/badge_placeholder.png');
+		}
 	};
 	
 	/** render Progress to progress bar */
@@ -218,6 +263,11 @@ function ProgressModel(parentModel) {
 		console.log('rendering progress to ui ' + this.readTopics);
 		$('#progressReadTopics').html(_('textYouHaveRead') + this.readTopics + _('textTopicsOutOf') + this.overallTopics + _('textAvailableTopics'));
 		$('#progressOverallTopics').html(_('textBetterThan') + this.countLower + _('textSameScore') + this.countSame + _('textScoreAnd') + this.countHigher + _('textWorseThan'));
+		this._renderBadgeStatus('badgeStarted', this.badgeStarted);
+		this._renderBadgeStatus('badgeBronze', this.badgeBronze);
+		this._renderBadgeStatus('badgeSilver', this.badgeSilver);
+		this._renderBadgeStatus('badgeGold', this.badgeGold);
+		this._renderBadgeStatus('badgeFinished', this.badgeFinished);
 	};
 	
 	/** Get Progress from service backend */

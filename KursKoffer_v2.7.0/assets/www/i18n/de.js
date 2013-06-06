@@ -9,7 +9,7 @@
 	"textSelectCourse": "W&auml;hlen sie einen Kurs um mit ihrem pers&ouml;nlichen Kurs zu starten.",
 	"textAvailableCourses": "Verf&uuml;gbare Kurse",
 	
-	"textYouHaveRead": "Du hast bereits",
+	"textYouHaveRead": "Du hast bereits ",
 	"textTopicsOutOf": " von ",
 	"textAvailableTopics": " Themen gelesen.",
 	"textBetterThan": "Das heisst dass du weiter vorne liegst als ",
@@ -18,6 +18,7 @@
 	"textWorseThan": " haben gleich viel gelesen wie du.",
 	
 	"textLearningProgress": "Lernfortschritt",
+	"textCurrentAchievements": "Deine bisherigen Errungenschaften",
 	
 	"optionSelect": "Kurs w&auml;hlen",
 	"optionRedCross": "Rettungssanit&auml;ter Rotes Kreuz",

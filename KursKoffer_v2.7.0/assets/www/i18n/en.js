@@ -9,7 +9,7 @@
 	"textSelectCourse": "Select a course to start your personal learning experience.",
 	"textAvailableCourses": "Available courses:",
 	
-	"textYouHaveRead": "You have read",
+	"textYouHaveRead": "You have read ",
 	"textTopicsOutOf": " topics out of ",
 	"textAvailableTopics": " available topics.",
 	"textBetterThan": "This means you are doing better than ",
@@ -18,6 +18,7 @@
 	"textWorseThan": " users have a better score than you.",
 	
 	"textLearningProgress": "Learning Progress",
+	"textCurrentAchievements": "Your current achievements",
 	
 	"optionSelect": "Select here...",
 	"optionRedCross": "Paramedic Course Red Cross (de)",

@@ -71,7 +71,6 @@ function LanguageTranslator(language) {
 			var element = jQuery(value);
 			var key = element.attr('data-i18n');
 			var value = t.text(key);
-			console.log('found element ' + element + ' setting translation to ' + key + ' which resolves to ' + value);
 			if(element.is('input')) {
 				element.html(value);
 				element.val(value);
