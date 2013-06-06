@@ -750,22 +750,30 @@ function KofferModel(u, p, t, course) {
 	
 	/** Private Method worker for: Load the Json Model from remote service */
 	this._loadJsonModelFromService = function(model) {
+		console.log('getting moodle data from backend');
 		if(this.token != '') {
 			$.post(KURSKOFFER_URL + "transform.php", {
 				token:this.token,
 				courseid:this.courseModel.getId()
 			}, function(data) {
 				if(data!='') {
+					console.log('there was data received from the backend');
 					// set to model for application
-					// TODO should we check here if we got correct JSON code?
-					model.setJsonModel(data);
+					try {
+						// try to parse
+						var json = JSON.parse(data);
+						model.setJsonModel(data, json);
+					}catch(e) {
+						// if it fails jQuery parsed for us
+						model.setJsonModel(JSON.stringify(data), data);
+					}
+					// write to local file
+					model.storeJsonModel();
 					// if listener is not null call it to render
 					if(model.renderingListener != null) {
 						model.renderingListener(model.getModel());
 						model.renderingListener = null;
 					}
-					// write to local file
-					model.storeJsonModel();
 				} else {
 					navigator.notification.alert("Error: server response is emty", function() {});
 				}
@@ -792,9 +800,12 @@ function KofferModel(u, p, t, course) {
 	};
 	
 	/** Set a new json model retrieved from local Storage or from the moodle service */
-	this.setJsonModel = function(json) {
+	this.setJsonModel = function(json, parsedModel) {
 		this.jsonModel = json;
-		this.parsedModel = null;
+		if(parsedModel == undefined) {
+			parsedModel = null;
+		}
+		this.parsedModel = parsedModel;
 	};
 	
 	/** Get the parsed model for rendering or access, parsing is peformed on demand if neccessary */
@@ -827,7 +838,7 @@ function KofferModel(u, p, t, course) {
 
 var kofferModel = null;
 
-/*
+/**
  * KursKoffer Code Procedure
  * Below list of functions are main part of the app
  * Authentication, Calendar Sync, Moodle Course List, FirsAid, Settings etc.
@@ -858,7 +869,12 @@ function onDeviceReady() {
 	navigator.splashscreen.hide();
 }
 
-/* Moving to the appropriate course chosen by user */
+/**
+ * User or setup code selected to move to a certain course
+ * Moving to the appropriate course chosen by user
+ * 
+ * This method moves to the courseForm and makes sure that the layout is adapted to the course settings
+ */
 function moveToCourse() {
 	var form = $('#courseForm');
 	var course = $('#coursetype', form).val();
@@ -867,6 +883,13 @@ function moveToCourse() {
 	$.mobile.changePage("index.html#loginPage", {transition: "flow"});
 }
 
+/**
+ * The service signaled that login was ok -> setup course and application
+ * 
+ * @param user
+ * @param password
+ * @param token
+ */
 function handleLoginSuccess(user, password, token) {
 	var form = $('#courseForm');
 	var course = $('#coursetype', form).val();
@@ -882,7 +905,9 @@ function handleLoginSuccess(user, password, token) {
 	$('.userName').html(kofferModel.getUserName());
 }
 
-/* Checking the user-entered parameters */
+/**
+ * The user requested a login
+ */
 function handleLogin() {
 	console.log("Performing login to middleware service");
 	var form = $("#paramedicLogin");
@@ -914,13 +939,6 @@ function handleLogin() {
                 console.log(errorThrown);
             }
         });
-//		console.log(result);
-//		console.log(result.responseText);
-//		if(result && json && result.responseText != undefined) {
-//			var json = jQuery.parseJSON(result.responseText);
-//			console.log('returned result');
-//			handleLoginSuccess(u, p, json);
-//		}
 	} else {
 		navigator.notification.alert("Geben Sie Ihren Benutzername und Passwort ein", function() {});
 		$("#submit1Btn").removeAttr("disabled");
@@ -928,19 +946,11 @@ function handleLogin() {
 	return false;
 }
 
-/* PRE_Authentication check for Username and Password */
-// TODO never called?
-function checkPreAuth() {
-	console.log('checkPreAuth');
-    var form = $('#paramedicLogin');
-    if(localStorage.getItem('username') != undefined && localStorage.getItem('password') != undefined) {
-        $('#username', form).val(localStorage.getItem('username'));
-        $('#password', form).val(localStorage.getItem('password'));
-        handleLogin();
-    }
-}
-
-/* Schedules Sync device calendar with moodle (import of iCal) */
+/**
+ *  Retrieves a schedule from the service and opens the scheudle list
+ *  
+ *  WARNING Inactive code kalender.php not existing on service side -> this does nothing right now
+ */
 function doSync() {
 	var usertkn = localStorage.getItem("token");
 	if(usertkn != '') {
@@ -962,18 +972,9 @@ function doSync() {
  * Renders a data object to the course list panel
  */
 function renderCourseList(myData) {
-	// TODO remove? caused an error which basically halted further JS execution
-//	var dContent = function(event) {
-//	    $c_content.html($(this).data('content'));
-//	}
-	
 	var courseList = $('#courseList');
 	var html = '';
 	var chapterList = [];
-	
-	// TODO remove? see above
-//	courseList.on('click', 'div', dContent);
-	
 	var first = true;
 	$.each(myData, function(index, item) {
 	    if ($.inArray(item.chapter, chapterList) === -1) {
@@ -986,15 +987,23 @@ function renderCourseList(myData) {
 	});
 	if(!first) { html += '</div>'; }
 	courseList.html(html);
+	try {
+		// try to refresh the list
+		courseList.collapsibleset('refresh');
+	}catch(e) {
+		// we completely ignore this exception
+		// the exception occurs when cordova is so fast that it calls "refresh" during init phase
+		// of the gui -> we call it anyway and see what happenens
+	}
 }
 
-/* Course: MenuButton procedure */
-var action = '', jsonString = '';
+/**
+ * Check if a course list is available in the model,
+ * if not make the kofferModel retrieve one from the service
+ */
 function courseList() {
 	if(kofferModel.isModelLoaded()) {
-		console.log('found locally cached moodle data .. trying to parse');
 		var myData = kofferModel.getModel();
-		console.log('found locally cached moodle data .. successfully parsed');
 		// show the loaded data
 		renderCourseList(myData);
 	}else{
@@ -1006,7 +1015,19 @@ function courseList() {
 	}
 }
 
-/* Display 'content' JSON element related to the clicked 'title' */
+/**
+ * Set a rendering listener and attempt to load data from backend
+ */
+function refreshCourses() {
+	console.log('user requested data update');
+	kofferModel.setRenderingListener(renderCourseList);
+	console.log('quering service for new data');
+	kofferModel.loadJsonModelFromService();
+}
+
+/**
+ * Render a single topic to the cContent div
+ */
 function sTopic(chapter, title) {
 	var myData2 = kofferModel.getModel();
 	for (var i = 0; i < myData2.length; i++) {
@@ -1027,92 +1048,12 @@ function sTopic(chapter, title) {
 	}
 }
 
-/* Get CourseList from the Moodle */
-// TODO defined but never called
-var jsonData = '';
-function getCourseList() {
-	var usertkn = localStorage.getItem("token");
-	usertkn = jQuery.trim(usertkn);
-	if(usertkn != '') {
-		$.post(KURSKOFFER_URL + "transform.php", {token:usertkn}, function(data) {
-			if(data!='') {
-				//call to 'saveCourseToFile()' function
-				jsonData = data;
-				action = 'w'; readWriteFile();
-			} else {
-				navigator.notification.alert("Error: server response is emty", function() {});
-			}
-		}, "json");
-	} else {
-		navigator.notification.alert("Error: can not find user token", function() {});
-	}
-	return false;
-}
-
-/* Cordova: File API - read & save data into storeage (json) */
-function readWriteFile() {
-	window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onFSSuccess, onFSError);
-}
-function onFSSuccess(fileSystem) {
-    console.log("The root of file system: " +fileSystem.root.name);
-    fileSystem.root.getFile("course.oerk", {create:true, exclusive:false}, gotFileEntry, onFSError);
-}
-//FileReader/FileWriter (Cordova API's)
-function gotFileEntry(fileEntry) {
-	console.log("checkpoint: got file - Read or Write");
-	if (action == 'r') fileEntry.file(gotFile, onFSError);
-	if (action == 'w') fileEntry.createWriter(gotFileWriter, onFSError); 
-}
-//FileReader/ ReadAsText
-function gotFile(file) {
-	readAsText(file);
-}
-function readAsText(file) {
-	var reader = new FileReader();
-	reader.onloadend = function(evt) {
-		console.log("Read as text");
-		console.log(evt.target.result);
-		jsonString = evt.target.result;
-	};
-	reader.readAsText(file);
-}
-//FileWriter
-function gotFileWriter(writer) {
-	writer.onwrite = function(evt) {
-		console.log("checkpoint: write success!");
-	};
-	writer.write(jsonData);
-	//REcall `courseList()` to display refreshed course-data from Moodle
-	//courseList();
-}
-function onFSError(err) {
-	console.log(err.code);
-}
-
-// TODO matthias removed calls and moved code to WikipediaModel
-function wikiGenerate() {
-//	var wtopic = keyword;
-//	console.log('wikiGenerate(): Got a Keyword - ' +wtopic);
-//	$.getJSON('http://de.wikipedia.org/w/api.php?action=parse&page='+wtopic+'&prop=text&format=json&callback=?', function(data) {
-//		// display generated content in 'id=cContent'
-//        $('#cContent').html(data.parse.text['*']);
-//        $('#cContent').find("a:not(.references a)").attr("href", function(){ return "http://de.m.wikipedia.org" + $(this).attr("href"); });
-//        $('#cContent').find("a").attr("target", "_blank");
-//    });
-//    return false;
-}
-
-/* FirstAid: MenuButton procedure */
+/**
+ * FirstAid: MenuButton procedure
+ * If the user clicks first aid direct him to app store
+ */
 function firstAid() {
 	window.open('https://play.google.com/store/apps/details?id=at.fh.firstaid');
-/*
-	window.plugins.webintent.startActivity({
-		action: WebIntent.ACTION_VIEW,
-		url: 'at.fh.firstaid://MobSanMain'},
-	    function() {};
-	    function() {alert('Failed to open eErsteHilfe App')};
-	});
-*/
 }
 
 /* Saving the changes in SETTINGS */
@@ -1147,7 +1088,9 @@ function loadSettings() {
 	}
 }
 
-/* On backButton click Exit App */
+/**
+ * On backButton click Exit App
+ */
 function onBackKeyDown() {
 	if($.mobile.activePage.is("#loginPage")) {
 		navigator.app.exitApp(); // Exit app if current page is loginPage
@@ -1155,6 +1098,10 @@ function onBackKeyDown() {
 		navigator.app.backHistory(); // Go back in history in any other case
 	}
 }
+
+/**
+ * Cleanup the Koffer Model and logout
+ */
 function doLogout() {
 	kofferModel.logout();
 	history.go(-(history.length - 1));

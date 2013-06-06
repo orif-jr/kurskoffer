@@ -79,7 +79,7 @@
 				<!-- GridView -->
 				<div id="gridview" class="ui-grid-a" align="center">
 					<div class="ui-block-a" id="menuCourses">
-						<a data-role="none" data-transition="slide" href="#coursesPage" onclick="courseList()"><img class="opacity" src="img/courses.png" /></a></div>
+						<a data-role="none" data-transition="slide" href="#coursesPage" onclick="courseList();"><img class="opacity" src="img/courses.png" /></a></div>
 					<div class="ui-block-b" id="menuSchedule">
 						<a data-role="none" data-transition="slide" href="#schedulePage"><img class="opacity" src="img/schedules.png" /></a></div>
 					<div class="ui-block-a" id="menuTasks">
@@ -112,7 +112,7 @@
 			<div data-role="header" data-position="inline" data-theme="b">
 				<h1>Kurse</h1>
 				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a>
-				<a data-role="none" class="refreshBtn opacity" data-transition="slide" href="#" onclick="kofferModel.loadJsonModelFromService();return false;"></a></div>
+				<a data-role="none" class="refreshBtn opacity" data-transition="slide" href="#" onclick="refreshCourses();return false;"></a></div>
 			<div data-role="content" id="cList">
 				<!-- collapsible sets (accordion) -->
 				<div data-role="collapsible-set" id="courseList" data-mini="true" data-collapsed-icon="arrow-r" data-expanded-icon="arrow-d" data-inset="false">
