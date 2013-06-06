@@ -181,7 +181,11 @@ function ProgressModel(parentModel) {
 	/** call this whenever a topic is touched */
 	this.trackAccess = function(chapter) {
 		var model = this;
-		$.post(KURSKOFFER_URL + "postProgress.php", { username:this.parentModel.getUserName(), chapter:chapter }, function(data) {
+		$.post(KURSKOFFER_URL + "postProgress.php", {
+			username:this.parentModel.getUserName(),
+			courseId:this.parentModel.getCourse().getId(),
+			chapter:chapter
+		}, function(data) {
 			model.getProgress();
 		});
 	};
@@ -189,7 +193,8 @@ function ProgressModel(parentModel) {
 	/** Private method that retrieves progress from backend */
 	this._retrieveProgress = function(model) {
 		jQuery.post(KURSKOFFER_URL + 'getProgress.php', {
-			username:this.parentModel.getUserName()
+			username:this.parentModel.getUserName(),
+			courseId:this.parentModel.getCourse().getId()
 		}, function(data) {
 			data = jQuery.trim(data);
 			if(data != '') {
