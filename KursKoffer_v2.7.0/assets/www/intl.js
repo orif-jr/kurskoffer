@@ -28,7 +28,6 @@ function LanguageTranslator(language) {
 			url: url,
 			success: function(data) {
 				console.log('result of loading translation file');
-				console.log(data);
 				translationModel._parseJsonTranslation(data);
 			},
 			error: function(xhr, textStatus, errorThrown) {
