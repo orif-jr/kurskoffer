@@ -47,7 +47,7 @@
 		<!-- 1.Rettungssanitäter --> 
     	<div data-role="page" id="loginPage">
 			<div data-role="header" data-position="inline" data-theme="b">
-				<h1>Authentifikation</h1>
+				<h1 data-i18n="headAuthen">Authentifikation</h1>
 				<a data-role="none" class="dummyBtn opacity" href="#"></a>
 				<a data-role="none" class="aboutBtn opacity" data-transition="slide" href="#aboutPage"></a></div>
 			<div data-role="content">
@@ -71,11 +71,11 @@
 		<!-- 1.Main page -->
 		<div data-role="page" id="homePage1">
 			<div data-role="header" data-position="inline" data-theme="b">
-				<h1>Hauptmenü</h1>
+				<h1 data-i18n="headMainmenu">Hauptmenü</h1>
 				<a data-role="none" data-transition="flip" class="logoutBtn opacity" href="#" onclick="doLogout();return false;"></a>
 				<a data-role="none" data-transition="slide" class="settingsBtn opacity" href="#settingsPage" onclick="loadSettings()"></a></div>
 			<div data-role="content">
-				<p>Willkommen im Lernsystem <b class="userName"></b></p><br />
+				<p data-i18n="welcomeMessage">Willkommen im Lernsystem <b class="userName"></b></p><br />
 				<!-- GridView -->
 				<div id="gridview" class="ui-grid-a" align="center">
 					<div class="ui-block-a" id="menuCourses">
@@ -110,7 +110,7 @@
 		<!-- 1.Courses page -->
 		<div data-role="page" id="coursesPage">
 			<div data-role="header" data-position="inline" data-theme="b">
-				<h1>Kurse</h1>
+				<h1 data-i18n="headCourse">Kurse</h1>
 				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a>
 				<a data-role="none" class="refreshBtn opacity" data-transition="slide" href="#" onclick="refreshCourses();return false;"></a></div>
 			<div data-role="content" id="cList">
@@ -141,7 +141,7 @@
 						</tr>
 					</table>
 				</div>
-				<div id="wikiContent" style="display: none; background-color: #ffffff;">
+				<div id="wikiContent" data-i18n="textWikiEmpty" style="display: none; background-color: #ffffff;">
 					No additional information found on Wikipedia
 				</div>
 				<!-- Wiki-generated content here (if available) -->
@@ -154,7 +154,7 @@
 		<!-- 1.Schedules page -->
 		<div data-role="page" id="schedulePage">
 			<div data-role="header" data-position="inline" data-theme="b">
-				<h1>Termine</h1>
+				<h1 data-i18n="headSchedule">Termine</h1>
 				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a>
 				<a data-role="none" class="settingsBtn opacity" data-transition="slide" href="#settingsPage"></a></div>
 			<div data-role="content" id="scheduleList">
@@ -170,7 +170,7 @@
 		<!-- 1.Tasks page -->
 		<div data-role="page" id="tasksPage">
 			<div data-role="header" data-position="inline" data-theme="b">
-				<h1>Aufgaben</h1>
+				<h1 data-i18n="headTasks">Aufgaben</h1>
 				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a>
 				<a data-role="none" class="settingsBtn opacity" data-transition="slide" href="#settingsPage"></a></div>
 			<div data-role="content" id="taskList">
@@ -181,11 +181,11 @@
 		<!-- 1.Progress page -->
 		<div data-role="page" id="progressPage">
 			<div data-role="header" data-position="inline" data-theme="b">
-				<h1>Fortschritt</h1>
+				<h1 data-i18n="headProgress">Fortschritt</h1>
 				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a>
 				<a data-role="none" class="settingsBtn opacity" data-transition="slide" href="#settingsPage"></a></div>
 			<div data-role="content" id="prgss">
-				<div id="progressReadTopics">
+				<div id="progressReadTopics" data-i18n="textProgress">
 					Data not loaded yet.
 				</div>
 				<div id="progressOverallTopics"></div>
@@ -196,7 +196,7 @@
 		<!-- 1.Social page -->
 		<div data-role="page" id="socialPage">
 			<div data-role="header" data-position="inline" data-theme="b">
-				<h1>Soziales Netz</h1>
+				<h1 data-i18n="headSocial">Soziales Netz</h1>
 				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a>
 				<a data-role="none" class="settingsBtn opacity" data-transition="slide" href="#settingsPage"></a></div>
 			<div data-role="content" id="socium">
@@ -209,44 +209,44 @@
 		<!-- Settings -->
 		<div data-role="page" id="settingsPage">
 			<div data-role="header" data-position="inline" data-theme="b">
-				<h1>Einstellungen</h1>
+				<h1 data-i18n="headSettings">Einstellungen</h1>
 				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a></div>
 			<div data-role="content">
 				<!-- listview -->
 				<form id="settingsForm" name="settingsForm">
 					<ul data-role="listview">
 						<li>
-							<h3>Töne</h3>
-							<p>Töne während des Pop-ups</p>
+							<h3 data-i18n="textSound">Töne</h3>
+							<p data-i18n="descrSound">Töne während des Pop-ups</p>
 							<p class="ui-li-aside">
 								<select id="sound" name="sound" data-role="slider" data-mini="true"
 									onchange="if (document.getElementById('sound').value == '1') beep();">
-									<option value="0">Aus</option>
-									<option value="1">An</option>
+									<option value="0" data-i18n="optionOff">Aus</option>
+									<option value="1" data-i18n="optionOn">An</option>
 								</select></p></li>
 						<li>
-							<h3>Vibration</h3>
-							<p>Vibration während des Pop-ups</p>
+							<h3 data-i18n="textVibra">Vibration</h3>
+							<p data-i18n="descrVibra">Vibration während des Pop-ups</p>
 							<p class="ui-li-aside">
 								<select id="vibration" name="vibration" data-role="slider" data-mini="true"
 									onchange="if (document.getElementById('vibration').value == '1') vibrate();">
-									<option value="0">Aus</option>
-									<option value="1">An</option>
+									<option value="0" data-i18n="optionOff">Aus</option>
+									<option value="1" data-i18n="optionOn">An</option>
 								</select></p></li>
 						<li>
-							<h3>Kalender Sync</h3>
-							<p>Sync mit dem Gerät Kalender</p>
+							<h3 data-i18n="textCalenSync">Kalender Sync</h3>
+							<p data-i18n="descrCalenSync">Sync mit dem Gerät Kalender</p>
 							<p class="ui-li-aside">
 								<a data-role="none" href="#" onclick="doSync()"><img src="css/images/ic_refresh.png" /></a></p></li>
 						<li data-icon="false">
-							<h3>Info</h3>
-							<p>Information über das Projekt</p>
+							<h3 data-i18n="textAbout">Über</h3>
+							<p data-i18n="descrAbout">Information über das Projekt</p>
 							<p class="ui-li-aside">
 								<a data-role="none" data-transition="slide" href="#aboutPage"><img src="css/images/ic_about.png" /></a></p></li>
 					</ul><br />
 					<div align="center">
-						<a href="javascript:history.back();" data-role="button" data-inline="true">Abbrechen</a>
-						<a href="javascript:history.back();" data-role="button" onclick="saveSettings()" data-inline="true">Speichern</a>
+						<a href="javascript:history.back();" data-role="button" data-inline="true" data-i18n="btnCancel">Abbrechen</a>
+						<a href="javascript:history.back();" data-role="button" onclick="saveSettings()" data-inline="true" data-i18n="btnSave">Speichern</a>
 					</div>
 				</form><!-- /listview -->
 			</div>
@@ -256,15 +256,15 @@
 		<!-- Forgot Password -->
 		<div data-role="page" id="forgotPass">
 			<div data-role="header" data-position="inline" data-theme="a">
-				<h1>Passwort Recovery</h1>
+				<h1 data-i18n="headPassRecovery">Passwort Recovery</h1>
 				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a></div>
 			<div data-role="content">
 				<!-- Content -->
-				<p>Please, enter your e-mail address for your account. The system will send you a verification code. Once you have received the token, you can choose a new password for your account.</p><br />
+				<p data-i18n="textPassRecovery">Please, enter your e-mail address for your account. The system will send you a verification code. Once you have received the token, you can choose a new password for your account.</p><br />
 				<form id="inputForm" name="inputForm">
-					<label for="Email">Enter yout e-mail address:</label>
+					<label for="Email" data-i18n="labelEnterEmail">Enter your e-mail address:</label>
 					<input type="text" name="email" id="email" value="" placeholder="" />
-					<a href="#" data-role="button" onclick="passwordRecovery()">Send</a>
+					<a href="#" data-role="button" data-i18n="btnSend" onclick="passwordRecovery()">Send</a>
 				</form><!-- /Content -->
 			</div>	
 		</div>
@@ -273,11 +273,11 @@
 		<!-- Help Page -->
 		<div data-role="page" id="helpPage">
 			<div data-role="header" data-position="inline" data-theme="a">
-				<h1>Need help</h1>
+				<h1 data-i18n="linkHelp">Sie brauchen Hilfe?</h1>
 				<a data-role="none" class="backBtn opacity" href="javascript:history.back();"></a></div>
 			<div data-role="content" data-theme="a">
 				<!-- Content -->
-				<p>Bla bla bla bla bla.</p>
+				<p>Under construction.</p>
 				<!-- /Content -->
 			</div>
 		</div>
@@ -286,10 +286,10 @@
 		<!-- About Page -->
 		<div data-role="page" id="aboutPage">
 			<div data-role="header" data-position="inline" data-theme="a">
-				<h1>Info</h1>
+				<h1 data-i18n="textAbout">Über</h1>
 				<a data-role="none" class="backBtn opacity" data-transition="slide" href="javascript:history.back();"></a></div>
 			<div data-role="content" align="center">
-				<h3>The CourseSuitcace App</h3>
+				<h3>Learner's Briefcase App</h3>
 				<p>Version 1.0</p>
 				<p>Copyright &copy 2013. All rights reserved.</p>
 				<p>Developers:</p>
