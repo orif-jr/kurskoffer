@@ -2,7 +2,6 @@
 	"appTitle": "Kurs Koffer",
 	
 	"btnLogin": "Anmelden",
-	
 	"linkLostPassword": "Passwort vergessen?",
 	"linkHelp": "Sie brauchen Hilfe?",
 	

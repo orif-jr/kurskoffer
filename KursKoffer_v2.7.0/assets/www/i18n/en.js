@@ -2,7 +2,6 @@
 	"appTitle": "Learners Briefcase",
 	
 	"btnLogin": "Login",
-	
 	"linkLostPassword": "Lost Password?",
 	"linkHelp": "Need some Help?",
 	
