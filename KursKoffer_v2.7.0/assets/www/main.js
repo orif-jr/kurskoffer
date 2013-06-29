@@ -470,6 +470,17 @@ function CourseModel(courseId) {
 			'img/firstaid.png',
 			'img/social.png');
 		break;
+	case 5:
+		// Rettungssanitäter - Pflichtschulung
+		this.course = new Course(5, "Pflichtschulung 1", "de", "img/oerk_ooe.png", "b");
+		this.course.setIconSet(
+				'img/courses.png', 
+				'img/schedules.png',
+				'img/tasks.png',
+				'img/progress.png',
+				'img/firstaid.png',
+				'img/social.png');
+		break;
 	case 3:
 		// Armenian History
 		this.course = new Course(3, "Armenian History", "en", "img/coin_tigranes.png", "d");

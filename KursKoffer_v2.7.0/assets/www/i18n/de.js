@@ -50,6 +50,6 @@
 	"textCurrentAchievements": "Deine bisherigen Errungenschaften",
 	
 	"optionSelect": "Kurs w&auml;hlen",
-	"optionRedCross": "Rettungssanit&auml;ter Rotes Kreuz",
+	"optionRedCross": "Pflichtschulung 1",
 	"optionArmenia": "Armenische Geschichte (en)"
 }
