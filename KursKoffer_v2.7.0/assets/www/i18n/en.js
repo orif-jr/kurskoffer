@@ -51,5 +51,12 @@
 	
 	"optionSelect": "Select here...",
 	"optionRedCross": "Paramedic Course Red Cross (de)",
-	"optionArmenia": "Armenian History"
+	"optionArmenia": "Armenian History",
+	
+	"textSocialBlue": "has started with the course",
+	"textSocialBronze": "has already read more than 20% of the required content",
+	"textSocialSilver": "has already read more than 70% of the required content",
+	"textSocialGold": "has already read more than 70% and is class leader",
+	"textSocialGreen": "has completed the course",
+	"textSocialPlaceholder": "did not start the course yet"
 }

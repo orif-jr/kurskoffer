@@ -98,6 +98,7 @@ function getTranslator() {
 
 /** translate the key to the currently selected language */
 function _(key) {
+	console.log(key);
 	return getTranslator().text(key);
 }
 

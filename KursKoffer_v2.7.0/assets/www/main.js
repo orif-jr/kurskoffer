@@ -365,12 +365,49 @@ function SocialModel(parentModel) {
 		}, function(data) {
 			data = jQuery.trim(data);
 			if(data != '') {
-				console.log(data);
 				var result = JSON.parse(data);
+				model._updateModel(result);
 			}else{
 				console.log('did not retrieve social progress');
 			}
 		});
+	};
+	
+	/** Get the highest color of a user */
+	this._getHighColor = function(user) {
+		if(user.green == "1") return "green";
+		if(user.gold == "1") return "gold";
+		if(user.silver == "1") return "silver";
+		if(user.bronze == "1") return "bronze";
+		if(user.blue == "1") return "blue";
+		return "placeholder";
+	};
+	
+	/** Get the highest color of a user, text interpretation */
+	this._getHighColorText = function(user) {
+		if(user.green == "1") return "Green";
+		if(user.gold == "1") return "Gold";
+		if(user.silver == "1") return "Silver";
+		if(user.bronze == "1") return "Bronze";
+		if(user.blue == "1") return "Blue";
+		return "Placeholder";
+	};
+	
+	/** Render retrieved JSON data */
+	this._updateModel = function(json) {
+		var html = '<table border="0">';
+		for(i=0;i<json.length;i++) {
+			html += '<tr><td>';
+			html += '<img height="36" src="img/badge_' + this._getHighColor(json[i]) + '.png" />'
+			html += '</td><td>';
+			html += json[i].firstname;
+			html += ' <span>';
+			html += _('textSocial' + this._getHighColorText(json[i]));
+			html += '</span>';
+			html += '</td></tr>';
+		}
+		html += '</table>';
+		jQuery('#socium').html(html);
 	};
 	
 	/** Request social status and save it to this object */
@@ -828,6 +865,7 @@ function KofferModel(u, p, t, course) {
 				token:this.token,
 				courseid:this.courseModel.getId()
 			}, function(data) {
+				console.log('processing data received from backend');
 				if(data!='') {
 					console.log('there was data received from the backend');
 					// set to model for application
@@ -849,7 +887,7 @@ function KofferModel(u, p, t, course) {
 				} else {
 					navigator.notification.alert("Error: server response is emty", function() {});
 				}
-			}, "json");
+			}); //"json" removed request type specification
 		}else{
 			console.log('Error no token was set');
 			navigator.notification.alert("Error: Cannot access Moodle no user token was set", function() {});
@@ -1054,13 +1092,15 @@ function renderCourseList(myData) {
 	var chapterList = [];
 	var first = true;
 	$.each(myData, function(index, item) {
-	    if ($.inArray(item.chapter, chapterList) === -1) {
+	    if ($.inArray(item.chapter, chapterList) === -1 && item.chapter != 'General') {
 	        chapterList.push(item.chapter);
 	        if(!first) { html += '</div>'; }
 	        html += '<div data-role="collapsible"><h3>' + item.chapter + '</h3>';
 	        first = false;
 	    }
-	    html += '<p><a href="#singleContent" onclick="sTopic(\'' + item.chapter + '\', \'' + item.title + '\')">' + item.title + '</a></p>';
+	    if(item.title != 'News forum' && item.title != 'Media') {
+	    	html += '<p><a href="#singleContent" onclick="sTopic(\'' + item.chapter + '\', \'' + item.title + '\')">' + item.title + '</a></p>';
+		}
 	});
 	if(!first) { html += '</div>'; }
 	courseList.html(html);

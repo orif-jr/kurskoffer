@@ -51,5 +51,12 @@
 	
 	"optionSelect": "Kurs w&auml;hlen",
 	"optionRedCross": "Pflichtschulung 1",
-	"optionArmenia": "Armenische Geschichte (en)"
+	"optionArmenia": "Armenische Geschichte (en)",
+	
+	"textSocialBlue": "hat bereits mit dem Lernen begonnen",
+	"textSocialBronze": "hat bereits mehr als 20% des Stoffes absolviert",
+	"textSocialSilver": "hat bereits mehr als 70% des Stoffes absolivert",
+	"textSocialGold": "hat bereits mehr als 70% des Stoffes absolviert und hat insgesamt den weitesten Lernfortschritt",
+	"textSocialGreen": "hat den Kurs bereits vollst&auml;ndig abgeschlossen",
+	"textSocialPlaceholder": "hat noch nicht mit dem Kurs begonnen"
 }
