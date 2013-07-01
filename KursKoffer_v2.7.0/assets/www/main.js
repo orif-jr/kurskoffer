@@ -230,21 +230,48 @@ function ProgressModel(parentModel) {
 	
 	/** Updates the state of the badges according to the current course progress */
 	this._updateBadges = function() {
+		// blau: lesen gestartet
+		// bronze: 20% gelesen
+		// silber: 70% gelesen
+		// gold: bester fortschritt
+		// grŸn: kurs abgeschlossen
 		if(this.readTopics > 0) {
 			this.badgeStarted = true;
-			if(this.countHigher < 5) {
+			if(this.readTopics / this.overallTopics > 0.2) {
 				this.badgeBronze = true;
 			}
-			if(this.countSame > this.countHigher) {
+			if(this.readTopics / this.overallTopics > 0.7) {
 				this.badgeSilver = true;
 			}
-			if(this.countHigher == 0) {
+			if(this.badgeSilver && this.countHigher == 0) {
 				this.badgeGold = true;
 			}
 			if(this.readTopics == this.overallTopics) {
 				this.badgeFinished = true;
 			}
 		}
+		this._postBadges();
+	};
+	
+	/** Post the current badges back to the backend */
+	this._postBadges = function() {
+		var blue = this.badgeStarted ? 1 : 0;
+		var bronze = this.badgeBronze ? 1 : 0;
+		var silver = this.badgeSilver ? 1 : 0;
+		var gold = this.badgeGold ? 1 : 0;
+		var green = this.badgeFinished ? 1 : 0;
+		
+		jQuery.post(KURSKOFFER_URL + 'postBadges.php', {
+			username:this.parentModel.getUserName(),
+			courseId:this.parentModel.getCourse().getId(),
+			blue:blue,
+			bronze:bronze,
+			silver:silver,
+			gold:gold,
+			green:green
+		}, function(data) {
+			// ignore result
+		});
 	};
 	
 	/** Render status of a single badge */
@@ -319,6 +346,37 @@ function ProgressModel(parentModel) {
                 ]
             }]
         });
+	};
+}
+
+/**
+ * Class that keeps the state of other people in the peer group
+ * 
+ * @param parentModel
+ */
+function SocialModel(parentModel) {
+	this.parentModel = parentModel;
+	
+	/** Private method that retrieves social data from backend */
+	this._retrieveSocial = function(model) {
+		jQuery.post(KURSKOFFER_URL + 'getSocial.php', {
+			username:this.parentModel.getUserName(),
+			courseId:this.parentModel.getCourse().getId()
+		}, function(data) {
+			data = jQuery.trim(data);
+			if(data != '') {
+				console.log(data);
+				var result = JSON.parse(data);
+			}else{
+				console.log('did not retrieve social progress');
+			}
+		});
+	};
+	
+	/** Request social status and save it to this object */
+	this.getSocial = function() {
+		console.log('Getting social group badges');
+		this._retrieveSocial(this);
 	};
 }
 
@@ -588,6 +646,9 @@ function KofferModel(u, p, t, course) {
 	/** Create a progress model */
 	this.progressModel = new ProgressModel(this);
 	
+	/** Create a social model */
+	this.socialModel = new SocialModel(this);
+	
 	/** Create wikipedia model */
 	this.wikipediaModel = new WikipediaModel(this);
 	
@@ -834,6 +895,11 @@ function KofferModel(u, p, t, course) {
 	/** Returns the initialized progress model */
 	this.getProgress = function() {
 		return this.progressModel;
+	};
+	
+	/** Returns the initialized social model */
+	this.getSocial = function() {
+		return this.socialModel;
 	};
 	
 	/** Returns the initialized wikipedia model */
