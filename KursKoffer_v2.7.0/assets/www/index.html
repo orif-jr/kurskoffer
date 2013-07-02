@@ -75,7 +75,21 @@
 				<a data-role="none" data-transition="flip" class="logoutBtn opacity" href="#" onclick="doLogout();return false;"></a>
 				<a data-role="none" data-transition="slide" class="settingsBtn opacity" href="#settingsPage" onclick="loadSettings()"></a></div>
 			<div data-role="content">
-				<p data-i18n="welcomeMessage">Willkommen im Lernsystem <b class="userName"></b></p><br />
+				<!-- <p data-i18n="welcomeMessage">Willkommen im Lernsystem <b class="userName"></b></p><br /> -->
+				<div id="badgeTitle" align="center" data-i18n="textCurrentAchievements">
+					You current achievements
+				</div><br />
+				<div id="badgeView" align="center">
+					<!-- OnClick add description procedure -->
+					<img id="badgeStarted" class="opacity" src="img/badge_placeholder.png" onclick="kofferModel.getProgress().showAlert('textUserInfoStarted');" data-enabled-src="img/badge_blue.png" />
+					<img id="badgeBronze" class="opacity" src="img/badge_placeholder.png" onclick="kofferModel.getProgress().showAlert('textUserInfo20');" data-enabled-src="img/badge_bronze.png" />
+					<img id="badgeSilver" class="opacity" src="img/badge_placeholder.png" onclick="kofferModel.getProgress().showAlert('textUserInfo70');" data-enabled-src="img/badge_silver.png" />
+					<img id="badgeGold" class="opacity" src="img/badge_placeholder.png" onclick="kofferModel.getProgress().showAlert('textUserInfoBestOne');" data-enabled-src="img/badge_gold.png" />
+					<img id="badgeFinished" class="opacity" src="img/badge_placeholder.png" onclick="kofferModel.getProgress().showAlert('textUserInfoFinished');" data-enabled-src="img/badge_green.png" />
+				</div>
+				<div id="badgeSpacer" style="height: 25px;">
+					&nbsp;
+				</div>
 				<!-- GridView -->
 				<div id="gridview" class="ui-grid-a" align="center">
 					<div class="ui-block-a" id="menuCourses">
@@ -91,19 +105,6 @@
 					<div class="ui-block-b" id="menuSocial">
 						<a data-role="none" data-transition="slide" href="#socialPage" onclick="kofferModel.getSocial().getSocial();"><img class="opacity" src="img/social.png" /></a></div>
 				</div><!-- /GridView -->
-				<div id="badgeSpacer" style="height: 45px;">
-					&nbsp;
-				</div>
-				<div id="badgeTitle" align="center" data-i18n="textCurrentAchievements">
-					You current achievements
-				</div>
-				<div id="badgeView" align="center">
-					<img id="badgeStarted" class="opacity" src="img/badge_placeholder.png" data-enabled-src="img/badge_blue.png" />
-					<img id="badgeBronze" class="opacity" src="img/badge_placeholder.png" data-enabled-src="img/badge_bronze.png" />
-					<img id="badgeSilver" class="opacity" src="img/badge_placeholder.png" data-enabled-src="img/badge_silver.png" />
-					<img id="badgeGold" class="opacity" src="img/badge_placeholder.png" data-enabled-src="img/badge_gold.png" />
-					<img id="badgeFinished" class="opacity" src="img/badge_placeholder.png" data-enabled-src="img/badge_green.png" />
-				</div>
             </div>
 		</div><!-- / 1.Main page -->
 		

@@ -297,6 +297,11 @@ function ProgressModel(parentModel) {
 		this._renderBadgeStatus('badgeFinished', this.badgeFinished);
 	};
 	
+	/** shows a notification to the user */
+	this.showAlert = function(badge) {
+		navigator.notification.alert(_(badge), function(){}, "Info");
+	};
+	
 	/** Get Progress from service backend */
 	this.getProgress = function() {
 		console.log('requesting progress from backend');
@@ -861,7 +866,7 @@ function KofferModel(u, p, t, course) {
 	this._loadJsonModelFromService = function(model) {
 		console.log('getting moodle data from backend');
 		if(this.token != '') {
-			$.post(KURSKOFFER_URL + "transform.php", {
+			$.post(KURSKOFFER_URL + "transform2.php", {
 				token:this.token,
 				courseid:this.courseModel.getId()
 			}, function(data) {

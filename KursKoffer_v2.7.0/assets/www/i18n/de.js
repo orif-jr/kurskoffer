@@ -58,5 +58,12 @@
 	"textSocialSilver": "hat bereits mehr als 70% des Stoffes absolivert",
 	"textSocialGold": "hat bereits mehr als 70% des Stoffes absolviert und hat insgesamt den weitesten Lernfortschritt",
 	"textSocialGreen": "hat den Kurs bereits vollst&auml;ndig abgeschlossen",
-	"textSocialPlaceholder": "hat noch nicht mit dem Kurs begonnen"
+	"textSocialPlaceholder": "hat noch nicht mit dem Kurs begonnen",
+	
+	"textUserInfoStarted": "Sie haben bereits zu lernen begonnen",
+	"textUserInfo20": "Sie haben bereits 20% des Materials gelesen",
+	"textUserInfo70": "Sie haben bereits 70% des Materials gelesen",
+	"textUserInfoBestOne": "Sie haben bereits mehr gelesen als anderen in ihrem Kurs",
+	"textUserInfoFinished": "Sie haben diesen Kurs abgeschlossen"
+	
 }
