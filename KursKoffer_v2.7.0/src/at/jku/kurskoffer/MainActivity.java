@@ -17,7 +17,7 @@
        under the License.
  */
 
-package tk.jku.kurskoffer;
+package at.jku.kurskoffer;
 
 import android.os.Bundle;
 import org.apache.cordova.*;
