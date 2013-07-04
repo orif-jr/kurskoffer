@@ -1,7 +1,7 @@
 /** Internationalisation for Cordova / PhoneGap web apps */
 
 /** Default Language in case no language object was created by app */
-var DEFAULT_SYSTEM_LANGAUGE = 'en';
+var DEFAULT_SYSTEM_LANGAUGE = 'de';
 
 /** Prepend to URL path */
 // TODO fix this for other platforms!
