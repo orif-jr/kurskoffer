@@ -573,6 +573,7 @@ function CourseModel(courseId) {
 	case 5:
 		// Rettungssanitäter - Pflichtschulung
 		this.course = new Course(5, "Pflichtschulung 1", "de", "img/oerk_ooe.png", "b");
+		this.course.hideExternalApplication = true;
 		this.course.setIconSet(
 				'img/courses.png', 
 				'img/schedules.png',
