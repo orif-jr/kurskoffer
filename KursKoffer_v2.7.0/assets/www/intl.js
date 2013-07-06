@@ -4,8 +4,8 @@
 var DEFAULT_SYSTEM_LANGAUGE = 'de';
 
 /** Prepend to URL path */
-// TODO fix this for other platforms!
-var URL_PREFIX = 'file:///android_asset/www/i18n/';
+var URL_PREFIX_ANDROID = 'file:///android_asset/www/i18n/';
+var URL_PREFIX_IPHONE = 'i18n/';
 
 /** Append to URL path */
 var URL_POSTFIX = '.js';
@@ -20,7 +20,13 @@ function LanguageTranslator(language) {
 	
 	/** load file from url */
 	this.loadTranslation = function() {
-		var url = URL_PREFIX + this.language + URL_POSTFIX;
+        var prefix = null;
+        if(device.platform == 'Android') {
+            prefix = URL_PREFIX_ANDROID;
+        }else{
+            prefix = URL_PREFIX_IPHONE;
+        }
+		var url = prefix + this.language + URL_POSTFIX;
 		var translationModel = this;
 		console.log('loading translation file from ' + url);
 		jQuery.ajax({

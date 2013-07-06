@@ -11,146 +11,7 @@ if(LOCAL) {
 	KURSKOFFER_URL = "http://10.0.2.2/kurskoffer/"
 }
 
-var deviceInfo = function() {
-    document.getElementById("platform").innerHTML = device.platform;
-    document.getElementById("version").innerHTML = device.version;
-    document.getElementById("uuid").innerHTML = device.uuid;
-    document.getElementById("name").innerHTML = device.name;
-    document.getElementById("width").innerHTML = screen.width;
-    document.getElementById("height").innerHTML = screen.height;
-    document.getElementById("colorDepth").innerHTML = screen.colorDepth;
-};
-
-var getLocation = function() {
-    var suc = function(p) {
-        alert(p.coords.latitude + " " + p.coords.longitude);
-    };
-    var locFail = function() {
-    };
-    navigator.geolocation.getCurrentPosition(suc, locFail);
-};
-
-var beep = function() {
-    navigator.notification.beep(2);
-};
-
-var vibrate = function() {
-    navigator.notification.vibrate(0);
-};
-
-function roundNumber(num) {
-    var dec = 3;
-    var result = Math.round(num * Math.pow(10, dec)) / Math.pow(10, dec);
-    return result;
-}
-
-var accelerationWatch = null;
-
-function updateAcceleration(a) {
-    document.getElementById('x').innerHTML = roundNumber(a.x);
-    document.getElementById('y').innerHTML = roundNumber(a.y);
-    document.getElementById('z').innerHTML = roundNumber(a.z);
-}
-
-var toggleAccel = function() {
-    if (accelerationWatch !== null) {
-        navigator.accelerometer.clearWatch(accelerationWatch);
-        updateAcceleration({
-            x : "",
-            y : "",
-            z : ""
-        });
-        accelerationWatch = null;
-    } else {
-        var options = {};
-        options.frequency = 1000;
-        accelerationWatch = navigator.accelerometer.watchAcceleration(
-                updateAcceleration, function(ex) {
-                    alert("accel fail (" + ex.name + ": " + ex.message + ")");
-                }, options);
-    }
-};
-
-var preventBehavior = function(e) {
-    e.preventDefault();
-};
-
-function dump_pic(data) {
-    var viewport = document.getElementById('viewport');
-    console.log(data);
-    viewport.style.display = "";
-    viewport.style.position = "absolute";
-    viewport.style.top = "10px";
-    viewport.style.left = "10px";
-    document.getElementById("test_img").src = data;
-}
-
-function fail(msg) {
-    alert(msg);
-}
-
-function show_pic() {
-    navigator.camera.getPicture(dump_pic, fail, {
-        quality : 50
-    });
-}
-
-function close() {
-    var viewport = document.getElementById('viewport');
-    viewport.style.position = "relative";
-    viewport.style.display = "none";
-}
-
-function contacts_success(contacts) {
-    alert(contacts.length
-            + ' contacts returned.'
-            + (contacts[2] && contacts[2].name ? (' Third contact is ' + contacts[2].name.formatted)
-                    : ''));
-}
-
-function get_contacts() {
-    var obj = new ContactFindOptions();
-    obj.filter = "";
-    obj.multiple = true;
-    navigator.contacts.find(
-            [ "displayName", "name" ], contacts_success,
-            fail, obj);
-}
-
-function check_network() {
-    var networkState = navigator.network.connection.type;
-
-    var states = {};
-    states[Connection.UNKNOWN]  = 'Unknown connection';
-    states[Connection.ETHERNET] = 'Ethernet connection';
-    states[Connection.WIFI]     = 'WiFi connection';
-    states[Connection.CELL_2G]  = 'Cell 2G connection';
-    states[Connection.CELL_3G]  = 'Cell 3G connection';
-    states[Connection.CELL_4G]  = 'Cell 4G connection';
-    states[Connection.NONE]     = 'No network connection';
-
-    confirm('Connection type:\n ' + states[networkState]);
-}
-
-var watchID = null;
-
-function updateHeading(h) {
-    document.getElementById('h').innerHTML = h.magneticHeading;
-}
-
-function toggleCompass() {
-    if (watchID !== null) {
-        navigator.compass.clearWatch(watchID);
-        watchID = null;
-        updateHeading({ magneticHeading : "Off"});
-    } else {        
-        var options = { frequency: 1000 };
-        watchID = navigator.compass.watchHeading(updateHeading, function(e) {
-            alert('Compass Error: ' + e.code);
-        }, options);
-    }
-}
-
+/** Initialize application */
 function init() {
     document.addEventListener("deviceready", onDeviceReady, false);
 }
@@ -442,8 +303,16 @@ function WikipediaModel(parentModel) {
 			console.log('found content on ' + topic);
 			var wikiContent = $('#wikiContent');
 	        wikiContent.html(data.parse.text['*']);
-	        wikiContent.find("a:not(.references a)").attr("href", function(){ return "http://de.m.wikipedia.org" + $(this).attr("href"); });
-	        wikiContent.find("a").attr("target", "_blank");
+	        wikiContent.find("a:not(.references a)").attr("href", function(){
+                return "http://de.m.wikipedia.org" + $(this).attr("href");
+            });
+            wikiContent.find("img").attr("src", function() {
+                return "http:" + $(this).attr("src");
+            });
+	        wikiContent.find("a").attr("target", "_system");
+            wikiContent.find("a").attr("onclick", function() {
+                return "window.open('" + $(this).attr("href") + "', '_system'); return false;";
+            });
 	        $('#wikiLink').show();
 	    });
 	};
@@ -472,6 +341,9 @@ function WikipediaModel(parentModel) {
 	this._hideWikipediaElements = function() {
 		$('#wikiContent').hide();
 		this.showing = false;
+        // change to show text
+        // textWikiAvailable
+        $('#wikiShowLink').html(_('textWikiAvailable'));
 	};
 	
 	/** Hide wiki integration */
@@ -490,6 +362,8 @@ function WikipediaModel(parentModel) {
 		$('#wikiLink').show();
 		$('#wikiContent').show();
 		this.showing = true;
+        // change text to hide
+        $('#wikiShowLink').html(_('textWikiHide'));
 	};
 	
 	
@@ -573,7 +447,9 @@ function CourseModel(courseId) {
 	case 5:
 		// RettungssanitŠter - Pflichtschulung
 		this.course = new Course(5, "Pflichtschulung 1", "de", "img/oerk_ooe.png", "b");
-		this.course.hideExternalApplication = true;
+        if(device.platform != 'Android') {
+            this.course.hideExternalApplication = true;
+        }
 		this.course.setIconSet(
 				'img/courses.png', 
 				'img/schedules.png',
@@ -850,7 +726,7 @@ function KofferModel(u, p, t, course) {
 
 	/** Check whether a model was correctly loaded from local storage or from the webservice */
 	this.isModelLoaded = function() {
-		return this.jsonModel != null;
+		return this.jsonModel != null && this.jsonModel != undefined;
 	};
 	
 	/** Loads the Json from local file */
@@ -885,11 +761,6 @@ function KofferModel(u, p, t, course) {
 					}
 					// write to local file
 					model.storeJsonModel();
-					// if listener is not null call it to render
-					if(model.renderingListener != null) {
-						model.renderingListener(model.getModel());
-						model.renderingListener = null;
-					}
 				} else {
 					navigator.notification.alert("Error: server response is emty", function() {});
 				}
@@ -917,11 +788,24 @@ function KofferModel(u, p, t, course) {
 	
 	/** Set a new json model retrieved from local Storage or from the moodle service */
 	this.setJsonModel = function(json, parsedModel) {
-		this.jsonModel = json;
-		if(parsedModel == undefined) {
-			parsedModel = null;
-		}
-		this.parsedModel = parsedModel;
+        if(json.length > 0) {
+            console.log('setting new model with length ' + json.length);
+            this.jsonModel = json;
+            if(parsedModel == undefined) {
+                parsedModel = null;
+            }
+            this.parsedModel = parsedModel;
+            // if listener is not null call it to render
+            if(this.renderingListener != null) {
+                console.log('calling rendering listener');
+                this.renderingListener(this.getModel());
+                this.renderingListener = null;
+            }
+        }else{
+            console.log('resetting to null');
+            this.jsonModel = null;
+            this.parsedModel = null;
+        }
 	};
 	
 	/** Get the parsed model for rendering or access, parsing is peformed on demand if neccessary */
@@ -1093,11 +977,13 @@ function doSync() {
  * Renders a data object to the course list panel
  */
 function renderCourseList(myData) {
+    console.log('rendering course list');
 	var courseList = $('#courseList');
 	var html = '';
 	var chapterList = [];
 	var first = true;
 	$.each(myData, function(index, item) {
+           console.log('rendering ' + item.title);
 	    if ($.inArray(item.chapter, chapterList) === -1 && item.chapter != 'General') {
 	        chapterList.push(item.chapter);
 	        if(!first) { html += '</div>'; }
@@ -1112,11 +998,13 @@ function renderCourseList(myData) {
 	courseList.html(html);
 	try {
 		// try to refresh the list
+        console.log('refreshing collapsible set');
 		courseList.collapsibleset('refresh');
 	}catch(e) {
 		// we completely ignore this exception
 		// the exception occurs when cordova is so fast that it calls "refresh" during init phase
 		// of the gui -> we call it anyway and see what happenens
+        console.log(e);
 	}
 }
 
@@ -1126,14 +1014,15 @@ function renderCourseList(myData) {
  */
 function courseList() {
 	if(kofferModel.isModelLoaded()) {
+        console.log('A model is already loaded .. just render it');
 		var myData = kofferModel.getModel();
 		// show the loaded data
 		renderCourseList(myData);
 	}else{
 		// data is not ready, just register the render method and request an update
-		// it is not very likely that this case occurs?
-		$('#cList').html('<div align="center">Daten werden abgerufen</div>');
+        console.log('No data loaded or model empty');
 		kofferModel.setRenderingListener(renderCourseList);
+        console.log('load model from service');
 		kofferModel.loadJsonModelFromService();
 	}
 }
@@ -1176,7 +1065,11 @@ function sTopic(chapter, title) {
  * If the user clicks first aid direct him to app store
  */
 function firstAid() {
-	window.open('https://play.google.com/store/apps/details?id=at.fh.firstaid');
+    if(device.platform == 'Android') {
+        window.open('https://play.google.com/store/apps/details?id=at.fh.firstaid', '_system');
+    }else{
+        window.open('https://itunes.apple.com/at/app/eerstehilfe/id488541482?l=en&mt=8', '_system');
+    }
 }
 
 /* Saving the changes in SETTINGS */

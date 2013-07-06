@@ -13,6 +13,8 @@
 	"welcomeMessage": "Willkommen beim Kurs Koffer ",
 	"headCourse": "Kurse",
 	"textWikiEmpty": "Keine weiteren Informationen auf Wikipedia gefunden",
+    "textWikiAvailable": "Weitere Infos auf Wikipedia",
+    "textWikiHide": "Wikipedia schliessen",
 	"headSchedule": "Termine",
 	"headTasks": "Aufgaben",
 	"headProgress": "Fortschritt",

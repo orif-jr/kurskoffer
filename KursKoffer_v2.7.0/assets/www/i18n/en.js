@@ -13,6 +13,8 @@
 	"welcomeMessage": "Welcome to your personal course ",
 	"headCourse": "Courses",
 	"textWikiEmpty": "No additional information found on Wikipedia",
+    "textWikiAvailable": "Further Info on Wikipedia",
+    "textWikiHide": "close Wikipedia",
 	"headSchedule": "Schedules",
 	"headTasks": "Tasks",
 	"headProgress": "Progress",
