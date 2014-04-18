@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">KursKoffer</string>
-    <string name="title_activity_main">with Cordova v.2.7.0</string>
-    <string name="hello_world">Hello world!</string>
-    <!-- AppMenu -->
-    <string name="menu_settings">Settings</string>
-    <string name="menu_about">About</string>
-</resources>
