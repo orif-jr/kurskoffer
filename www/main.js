@@ -219,10 +219,10 @@ function ProgressModel(parentModel) {
             },
             series: [{
                 type: 'pie',
-                name: 'Learning Progress',
+                name: _('textLearningProgress'),
                 data: [
-                    ['Read',   model.readTopics],
-                    ['Unread', model.overallTopics - model.readTopics]
+                    [_('textTopicsRead'),   model.readTopics],
+                    [_('textTopicsUnread'), model.overallTopics - model.readTopics]
                 ]
             }]
         });
@@ -959,6 +959,8 @@ function handleLogin() {
                 console.log(xhr.responseText);
                 console.log(textStatus);
                 console.log(errorThrown);
+                alert(textSTatus);
+                $("#submit1Btn").removeAttr("disabled");
             }
         });
 	} else {
@@ -1066,7 +1068,7 @@ function sTopicId(id) {
 	}
 	kofferModel.getProgress().trackAccess(id);
 	
-	var keyword = $('#kword');
+	var keyword = $('#cContent #kword');
 	if(keyword) {
 		console.log('there is a keyword we need wikipedia context ' + keyword.val());
 		kofferModel.getWikipedia().setTopic(keyword.val());

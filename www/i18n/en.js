@@ -49,6 +49,8 @@
 	"textWorseThan": " users have a better score than you.",
 	
 	"textLearningProgress": "Learning Progress",
+    "textTopicsRead": "Read",
+    "textTopicsUnread": "Unread",
 	"textCurrentAchievements": "Your current achievements",
 	
 	"optionSelect": "Select here...",

@@ -49,6 +49,8 @@
 	"textWorseThan": " haben gleich viel gelesen wie du.",
 	
 	"textLearningProgress": "Lernfortschritt",
+    "textTopicsRead": "Gelesen",
+    "textTopicsUnread": "Offen",
 	"textCurrentAchievements": "Deine bisherigen Errungenschaften",
 	
 	"optionSelect": "Kurs w&auml;hlen",
