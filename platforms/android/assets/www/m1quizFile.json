@@ -1,0 +1,20 @@
+﻿{
+	"introduction":"Willkommen bei Quizkarten. Um Quiz zu starten, drücken Sie bitte 'Next'",
+	"questions":[
+		{"question":"Kohlenmonoxid-Vergiftung führt zu..",
+		 "answers":["positiven Ergebnissen","falsch positiven Ergebnissen","keine richtige Antwort"],
+		 "correct":1},		
+		{"question":"Sauerstoffinhalation – Abgabemenge bei der Verwendung von Pulsoxymetrie: spO2",
+		 "answers":["< 82% bis 86%","< 88% bis 92%","< 94% bis 98%"],
+		 "correct":2},
+		{"question":"Abgabe auf die höchstmögliche Dosierung einstellen",
+		 "answers":["maximal 15 l/min","minimal 20 l/min","genau 25 l/min"],
+		 "correct":0},
+		{"question":"Schwarzer Codechip für Blutzuckermessgerät ist..",
+		 "answers":["Code 111","Code 222","Code 333"],
+		 "correct":1},
+		{"question":"Arbeitstemperatur für ACCU-CHECK Performa Nano",
+		 "answers":["8 – 44°C","10 – 42°C","12 – 40°C"],
+		 "correct":0}
+	]
+}
