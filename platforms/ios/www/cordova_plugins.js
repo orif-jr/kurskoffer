@@ -170,6 +170,13 @@ module.exports = [
         "clobbers": [
             "window.open"
         ]
+    },
+    {
+        "file": "plugins/org.apache.cordova.dialogs/www/notification.js",
+        "id": "org.apache.cordova.dialogs.notification",
+        "merges": [
+            "navigator.notification"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -179,7 +186,8 @@ module.exports.metadata =
     "org.apache.cordova.console": "0.2.7",
     "org.apache.cordova.statusbar": "0.1.3",
     "org.apache.cordova.device": "0.2.8",
-    "org.apache.cordova.inappbrowser": "0.3.3"
+    "org.apache.cordova.inappbrowser": "0.3.3",
+    "org.apache.cordova.dialogs": "0.2.6"
 }
 // BOTTOM OF METADATA
 });

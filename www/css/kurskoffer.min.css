@@ -74,3 +74,21 @@
 /* Hover effects on icons */
 .opacity {opacity:1.0; filter:alpha(opacity=100);}
 .opacity:hover {opacity:0.75; filter:alpha(opacity=75);}
+
+.scheduleBlockHead {
+    padding-top: 10px;
+    font-weight: bold;
+    border-bottom: 1px solid grey;
+}
+
+.dateBlock {
+
+}
+
+.passed {
+    color: grey;
+}
+
+.visited {
+    color: green;
+}

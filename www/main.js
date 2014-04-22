@@ -943,12 +943,15 @@ function handleLogin() {
 //            dataType: 'application/json',
             success: function(data) {
             	console.log("returned from post " + data);
-    			if(data!='') {
+    			if(data != '' && data.indexOf('error') == -1) {
     				handleLoginSuccess(u, p, data);
     			} else {
     				console.log("No data was returned from service");
-    				navigator.notification.alert("Anmeldung fehlgeschlagen! Bitte probieren Sie noch einmal", function() {});
-    				$("#submit1Btn").removeAttr("disabled");
+                    $("#submit1Btn").removeAttr("disabled");
+    				navigator.notification.alert("Anmeldung fehlgeschlagen! Kontrollieren sie ihren Benutzernamen und ihr Passwort!", function() {
+                        var form = $("#paramedicLogin");
+                        $("#password", form).val('');
+                    });
     			}
             },
             error: function(xhr, textStatus, errorThrown) {

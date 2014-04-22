@@ -45,6 +45,9 @@
 		D4A0D8761607E02300AEF8BB /* Default-568h@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = D4A0D8751607E02300AEF8BB /* Default-568h@2x~iphone.png */; };
 		E4F6B8F052874A8AB9BDE56C /* CDVFile.m in Sources */ = {isa = PBXBuildFile; fileRef = B59B04C070FD41FCA1A5CEED /* CDVFile.m */; };
 		90EA7AF189214946AE633A0A /* CDVInAppBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = 12BEEC6239F84BF1947FC7D1 /* CDVInAppBrowser.m */; };
+		FFE8DDDD400E45E7BDD4FA62 /* CDVNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = 8779988FA2404D709647CD6E /* CDVNotification.m */; };
+		3D7F0A0FC6DF444BA9ADC0F8 /* CDVNotification.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 61760C2FB0D6465B884F5439 /* CDVNotification.bundle */; };
+		597E737CA08047FB94683935 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC4E292FE17148E480B93396 /* AudioToolbox.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -123,6 +126,10 @@
 		FDB95353AE0D44BD82B1768F /* CDVStatusBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVStatusBar.m; path = org.apache.cordova.statusbar/CDVStatusBar.m; sourceTree = "<group>"; };
 		12BEEC6239F84BF1947FC7D1 /* CDVInAppBrowser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVInAppBrowser.m"; path = "org.apache.cordova.inappbrowser/CDVInAppBrowser.m"; sourceTree = "<group>"; fileEncoding = 4; };
 		959103DB04A644A3A215781F /* CDVInAppBrowser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVInAppBrowser.h"; path = "org.apache.cordova.inappbrowser/CDVInAppBrowser.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		8779988FA2404D709647CD6E /* CDVNotification.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVNotification.m"; path = "org.apache.cordova.dialogs/CDVNotification.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		B57C4AE274EF49168652D6CF /* CDVNotification.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVNotification.h"; path = "org.apache.cordova.dialogs/CDVNotification.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		61760C2FB0D6465B884F5439 /* CDVNotification.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = "CDVNotification.bundle"; path = "CDVNotification.bundle"; sourceTree = "<group>"; };
+		DC4E292FE17148E480B93396 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "AudioToolbox.framework"; path = "System/Library/Frameworks/AudioToolbox.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,6 +142,7 @@
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
 				305D5FD1115AB8F900A74A75 /* MobileCoreServices.framework in Frameworks */,
 				5AEE5B35173C68D80009041E /* CoreLocation.framework in Frameworks */,
+				597E737CA08047FB94683935 /* AudioToolbox.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -216,6 +224,7 @@
 				308D052D1370CCF300D202BF /* icons */,
 				308D05311370CCF300D202BF /* splash */,
 				8D1107310486CEB800E47090 /* KursKoffer-Info.plist */,
+				61760C2FB0D6465B884F5439 /* CDVNotification.bundle */,
 			);
 			name = Resources;
 			path = KursKoffer/Resources;
@@ -228,6 +237,7 @@
 				5B1594DC16A7569C00FEF299 /* AssetsLibrary.framework */,
 				288765FC0DF74451002DB57D /* CoreGraphics.framework */,
 				305D5FD0115AB8F900A74A75 /* MobileCoreServices.framework */,
+				DC4E292FE17148E480B93396 /* AudioToolbox.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -257,6 +267,8 @@
 				3C92DD378E5A477A9AA91223 /* CDVDevice.h */,
 				12BEEC6239F84BF1947FC7D1 /* CDVInAppBrowser.m */,
 				959103DB04A644A3A215781F /* CDVInAppBrowser.h */,
+				8779988FA2404D709647CD6E /* CDVNotification.m */,
+				B57C4AE274EF49168652D6CF /* CDVNotification.h */,
 			);
 			name = Plugins;
 			path = KursKoffer/Plugins;
@@ -426,6 +438,7 @@
 				7E7966E11810823500FA85AD /* icon-50@2x.png in Resources */,
 				7E7966E51810823500FA85AD /* icon-76@2x.png in Resources */,
 				30FC414916E50CA1004E6F35 /* icon-72@2x.png in Resources */,
+				3D7F0A0FC6DF444BA9ADC0F8 /* CDVNotification.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -478,6 +491,7 @@
 				8E47A7E8A8C34DB6A009962F /* CDVStatusBar.m in Sources */,
 				743722DD9E8B43A09284EB5D /* CDVDevice.m in Sources */,
 				90EA7AF189214946AE633A0A /* CDVInAppBrowser.m in Sources */,
+				FFE8DDDD400E45E7BDD4FA62 /* CDVNotification.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
